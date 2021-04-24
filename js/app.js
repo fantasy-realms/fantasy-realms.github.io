@@ -72,7 +72,6 @@ function toggleCursedHoardItems() {
   cursedHoardItems = !cursedHoardItems;
   localStorage.setItem('ch_items', cursedHoardSuits);
   reset();
-  showCards();
 }
 
 function toggleCursedHoardSuits() {
@@ -83,8 +82,7 @@ function toggleCursedHoardSuits() {
   } else {
     deck.disableCursedHoardSuits();
   }
-  clearHand();
-  showCards();
+  reset();
 }
 
 function setPlayerCount(count) {
