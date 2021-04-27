@@ -1,3 +1,7 @@
+Handlebars.registerHelper('normalize', function(str) {
+  return str.replace(/\s+/g, '-').toLowerCase();
+});
+
 $(document).ready(function() {
   configureSelectedPlayerCount();
   configureSelectedExpansions();
@@ -32,6 +36,7 @@ function configureSelectedExpansions() {
       if (param[0] === 'expansions') {
         if (param[1].indexOf('ch_items') > -1) {
           cursedHoardItems = true;
+          deck.enableCursedHoardItems();
           $('#ch_items').prop('checked', true);
         }
         if (param[1].indexOf('ch_suits') > -1) {
@@ -44,6 +49,7 @@ function configureSelectedExpansions() {
   } else {
     if (localStorage.getItem('ch_items')) {
       cursedHoardItems = true;
+      deck.enableCursedHoardItems();
       $('#ch_items').prop('checked', true);
     }
     if (localStorage.getItem('ch_suits')) {
@@ -70,7 +76,12 @@ function configureSelectedPlayerCount() {
 
 function toggleCursedHoardItems() {
   cursedHoardItems = !cursedHoardItems;
-  localStorage.setItem('ch_items', cursedHoardSuits);
+  localStorage.setItem('ch_items', cursedHoardItems);
+  if (cursedHoardItems) {
+    deck.enableCursedHoardItems();
+  } else {
+    deck.disableCursedHoardItems();
+  }
   reset();
 }
 
@@ -330,7 +341,7 @@ function switchToHand() {
 function showCards(suits) {
   var template = Handlebars.compile($("#cards-template").html());
   var html = template({
-    suits: deck.getCardsBySuit(suits)
+    suits: deck.getCardsBySuit(suits),
   }, {
     allowProtoMethodsByDefault: true
   });

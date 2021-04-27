@@ -38,13 +38,13 @@
   <script id="cards-template" type="text/x-handlebars-template">
     {{#each suits}}
     <div class="card">
-      <div class="card-header" role="tab" id="{{@key}}Header" data-toggle="collapse" data-target="#{{@key}}" data-parent="#cards" href="#{{@key}}" aria-expanded="false" aria-controls="{{@key}}">
+      <div class="card-header" role="tab" id="{{normalize @key}}-header" data-toggle="collapse" data-target="#{{normalize @key}}" data-parent="#cards" href="#{{normalize @key}}" aria-expanded="false" aria-controls="{{normalize @key}}">
         <a>{{@key}}</a>
       </div>
-      <div id="{{@key}}" class="collapse" role="tabpanel" data-parent="#cards" aria-labelledby="{{@key}}Header">
+      <div id="{{normalize @key}}" class="collapse" role="tabpanel" data-parent="#cards" aria-labelledby="{{normalize @key}}-header">
         <ul class="list-group">
           {{#each this}}
-          <li class="list-group-item {{suit}}" onclick="addToView('{{id}}')"><span class="badge badge-secondary">{{strength}}</span> {{name}}</li>
+          <li class="list-group-item {{normalize suit}}" onclick="addToView('{{id}}')"><span class="badge badge-secondary">{{strength}}</span> {{name}}</li>
           {{/each}}
         </ul>
       </div>
@@ -64,7 +64,7 @@
     {{#each hand.cardsInHand}}
     <div id="card-{{id}}" class="card" onclick="selectFromHand('{{id}}')">
       <ul class="list-group">
-        <li class="list-group-item {{suit}} {{#if blanked}}blanked{{/if}}">
+        <li class="list-group-item {{normalize suit}} {{#if blanked}}blanked{{/if}}">
           <span class="badge badge-secondary">
             {{#if blanked}}
               BLANKED
@@ -127,7 +127,7 @@
     {{#each discard}}
     <div id="discard-{{id}}" class="card" onclick="removeFromDiscard('{{id}}')">
       <ul class="list-group">
-        <li class="list-group-item {{suit}}">
+        <li class="list-group-item {{normalize suit}}">
           {{name}}
         </li>
       </ul>

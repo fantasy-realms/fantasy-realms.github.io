@@ -13,6 +13,7 @@
   --building-color: #463153;
   --outsider-color: #fba934;
   --undead-color: #004e4a;
+  --cursed-item-color: #900c3f; 
   --header-border: 6px;
 }
 
@@ -127,7 +128,7 @@ li.list-group-item {
   font-size: 0.9rem;
 }
 
-li.Land {
+li.land {
   background-color: var(--land-color);
 }
 
@@ -135,11 +136,11 @@ span.land {
   color: var(--land-color);
 }
 
-#LandHeader {
+#land-header {
   border-right: solid var(--land-color) var(--header-border);
 }
 
-li.Flood {
+li.flood {
   background-color: var(--flood-color);
 }
 
@@ -147,11 +148,11 @@ span.flood {
   color: var(--flood-color);
 }
 
-#FloodHeader {
+#flood-header {
   border-right: solid var(--flood-color) var(--header-border);
 }
 
-li.Weather {
+li.weather {
   background-color: var(--weather-color);
 }
 
@@ -159,11 +160,11 @@ span.weather {
   color: var(--weather-color);
 }
 
-#WeatherHeader {
+#weather-header {
   border-right: solid var(--weather-color) var(--header-border);
 }
 
-li.Flame {
+li.flame {
   background-color: var(--flame-color);
 }
 
@@ -171,11 +172,11 @@ span.flame {
   color: var(--flame-color);
 }
 
-#FlameHeader {
+#flame-header {
   border-right: solid var(--flame-color) var(--header-border);
 }
 
-li.Army {
+li.army {
   background-color: var(--army-color);
 }
 
@@ -183,11 +184,11 @@ span.army {
   color: var(--army-color);
 }
 
-#ArmyHeader {
+#army-header {
   border-right: solid var(--army-color) var(--header-border);
 }
 
-li.Wizard {
+li.wizard {
   background-color: var(--wizard-color);
 }
 
@@ -195,11 +196,11 @@ span.wizard {
   color: var(--wizard-color);
 }
 
-#WizardHeader {
+#wizard-header {
   border-right: solid var(--wizard-color) var(--header-border);
 }
 
-li.Leader {
+li.leader {
   background-color: var(--leader-color);
 }
 
@@ -207,11 +208,11 @@ span.leader {
   color: var(--leader-color);
 }
 
-#LeaderHeader {
+#leader-header {
   border-right: solid var(--leader-color) var(--header-border);
 }
 
-li.Beast {
+li.beast {
   background-color: var(--beast-color);
 }
 
@@ -219,11 +220,11 @@ span.beast {
   color: var(--beast-color);
 }
 
-#BeastHeader {
+#beast-header {
   border-right: solid var(--beast-color) var(--header-border);
 }
 
-li.Weapon {
+li.weapon {
   background-color: var(--weapon-color);
 }
 
@@ -231,11 +232,11 @@ span.weapon {
   color: var(--weapon-color);
 }
 
-#WeaponHeader {
+#weapon-header {
   border-right: solid var(--weapon-color) var(--header-border);
 }
 
-li.Artifact {
+li.artifact {
   background-color: var(--artifact-color);
 }
 
@@ -243,11 +244,11 @@ span.artifact {
   color: var(--artifact-color);
 }
 
-#ArtifactHeader {
+#artifact-header {
   border-right: solid var(--artifact-color) var(--header-border);
 }
 
-li.Wild {
+li.wild {
   background-color: var(--wild-color);
 }
 
@@ -255,11 +256,11 @@ span.wild {
   color: var(--wild-color);
 }
 
-#WildHeader {
+#wild-header {
   border-right: solid var(--wild-color) var(--header-border);
 }
 
-li.Building {
+li.building {
   background-color: var(--building-color);
 }
 
@@ -267,11 +268,11 @@ span.building {
   color: var(--building-color);
 }
 
-#BuildingHeader {
+#building-header {
   border-right: solid var(--building-color) var(--header-border);
 }
 
-li.Outsider {
+li.outsider {
   background-color: var(--outsider-color);
 }
 
@@ -279,11 +280,11 @@ span.outsider {
   color: var(--outsider-color);
 }
 
-#OutsiderHeader {
+#outsider-header {
   border-right: solid var(--outsider-color) var(--header-border);
 }
 
-li.Undead {
+li.undead {
   background-color: var(--undead-color);
 }
 
@@ -291,8 +292,20 @@ span.undead {
   color: var(--undead-color);
 }
 
-#UndeadHeader {
+#undead-header {
   border-right: solid var(--undead-color) var(--header-border);
+}
+
+li.cursed-item {
+  background-color: var(--cursed-item-color);
+}
+
+span.cursed-item {
+  color: var(--cursed-item-color);
+}
+
+#cursed-item-header {
+  border-right: solid var(--cursed-item-color) var(--header-border);
 }
 
 #cards {
