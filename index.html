@@ -1,4 +1,4 @@
-<html lang="en" manifest="/fantasy-realms/fantasy-realms.appcache">
+<html lang="en" manifest="fantasy-realms.appcache">
 
 <head>
   <meta charset="utf-8">
@@ -180,7 +180,7 @@
 
 <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/fantasy-realms/service-worker.js', {scope: '/fantasy-realms/'});
+    navigator.serviceWorker.register('/service-worker.js'});
   }
 </script>
 
