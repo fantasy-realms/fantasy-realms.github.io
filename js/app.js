@@ -15,7 +15,8 @@ Handlebars.registerHelper('i18n', function() {
 var languages = {
   'en': 'English',
   'de': 'Deutsch',
-  'es': 'Español'
+  'es': 'Español',
+  'ua': 'Українська',
 }
 
 $(document).ready(function() {

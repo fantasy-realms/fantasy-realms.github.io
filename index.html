@@ -40,12 +40,12 @@
     {{#each suits}}
     <div class="card">
       <div class="card-header" role="tab" id="{{@key}}-header" data-toggle="collapse" data-target="#{{@key}}" data-parent="#cards" href="#{{@key}}" aria-expanded="false" aria-controls="{{@key}}">
-        <a>{{i18n 'suit.' @key}}</a>
+        <a>{{{i18n 'suit.' @key}}}</a>
       </div>
       <div id="{{@key}}" class="collapse" role="tabpanel" data-parent="#cards" aria-labelledby="{{@key}}-header">
         <ul class="list-group">
           {{#each this}}
-          <li class="list-group-item {{suit}}" onclick="addToView('{{id}}')"><span class="badge badge-secondary">{{strength}}</span> {{i18n id '.name'}}</li>
+          <li class="list-group-item {{suit}}" onclick="addToView('{{id}}')"><span class="badge badge-secondary">{{strength}}</span> {{{i18n id '.name'}}}</li>
           {{/each}}
         </ul>
       </div>
@@ -56,7 +56,7 @@
     {{#each suits}}
     <div class="card">
       <div class="card-header suit-selection" onclick="selectSuit('{{this}}')">
-        {{i18n 'suit.' this}}
+        {{{i18n 'suit.' this}}}
       </div>
     </div>
     {{/each}}
@@ -75,12 +75,12 @@
           </span> 
           {{#if impersonator}}
             {{#if magic}}
-              {{i18n actionData.[0] '.name'}}
+              {{{i18n actionData.[0] '.name'}}}
             {{else}}
-              {{i18n id '.name'}}
+              {{{i18n id '.name'}}}
             {{/if}}
           {{else}}
-            {{i18n id '.name'}}
+            {{{i18n id '.name'}}}
           {{/if}}
           {{#if magic}}
           *
@@ -116,7 +116,7 @@
         {{#if card.action}}
         <li class="list-group-item bonus">
             <span id="card-action-text-{{id}}"></span>
-            <button id="card-action-use-{{id}}" type="button" class="btn btn-sm btn-primary float-right" onclick="event.stopPropagation(); useCardAction('{{id}}');">{{i18n 'button.use'}}</button>
+            <button id="card-action-use-{{id}}" type="button" class="btn btn-sm btn-primary float-right" onclick="event.stopPropagation(); useCardAction('{{id}}');">{{{i18n 'button.use'}}}</button>
             <button id="card-action-cancel-{{id}}" style="display: none;" type="button" class="btn btn-sm btn-primary float-right" onclick="event.stopPropagation(); cancelCardAction('{{id}}');">{{i18n 'button.cancel'}}</button>
         </li>
         {{/if}}
@@ -191,6 +191,7 @@
               <a id="lang-en" class="dropdown-item" href="#" onclick="selectLanguage('en')">English</a>
               <a id="lang-de" class="dropdown-item" href="#" onclick="selectLanguage('de')">Deutsch</a>
               <a id="lang-de" class="dropdown-item" href="#" onclick="selectLanguage('es')">Español</a>
+              <a id="lang-ua" class="dropdown-item" href="#" onclick="selectLanguage('ua')">Українська</a>
             </div>
           </div>
         </div>
