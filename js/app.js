@@ -40,6 +40,9 @@ $(document).ready(function() {
       $('#ch_suits').change(function() {
         toggleCursedHoardSuits();
       });
+      $('#sound-state').change(function () {
+        toggleSound();
+      });
       updateLabels(lang);
     }
   });
@@ -78,6 +81,7 @@ function updateLabels(lang) {
   $('#clear').html(jQuery.i18n.prop('button.reset'));
   $('#lbl_ch_items').html(jQuery.i18n.prop('label.cursed-hoard.items'));
   $('#lbl_ch_suits').html(jQuery.i18n.prop('label.cursed-hoard.suits'));
+  $('#sound-label').html(jQuery.i18n.prop('button.sound'));
   $('#selected-language').html(languages[lang]);
   $('#language .dropdown-item').removeClass('active');
   $('#lang-' + lang).addClass('active');
@@ -172,6 +176,10 @@ function reset() {
   inputDiscardArea = false;
   $("#discard").hide();
   $("#hand").show();
+}
+
+function toggleSound() {
+  click.muted = swoosh.muted = clear.muted = magic.muted = !click.muted;
 }
 
 function addToView(id) {
