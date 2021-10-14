@@ -180,6 +180,7 @@ function reset() {
 
 function toggleSound() {
   click.muted = swoosh.muted = clear.muted = magic.muted = !click.muted;
+  clear.play();
 }
 
 function addToView(id) {
