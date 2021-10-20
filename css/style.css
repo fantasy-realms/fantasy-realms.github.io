@@ -13,7 +13,7 @@
   --building-color: #463153;
   --outsider-color: #fba934;
   --undead-color: #004e4a;
-  --cursed-item-color: #900c3f; 
+  --cursed-item-color: #900c3f;
   --header-border: 6px;
 }
 
@@ -37,6 +37,10 @@ body {
   min-height: 100%;
   width: 100%;
   max-width: 60rem;
+
+  /* center the container */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 header {
