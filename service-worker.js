@@ -27,6 +27,7 @@ var URLS = [
   'i18n/Messages_de.properties',
   'i18n/Messages_es.properties',
   'i18n/Messages_fr.properties',
+  'i18n/Messages_pl.properties',
   'i18n/Messages_ua.properties',
   'sound/clear.mp3',
   'sound/click.mp3',

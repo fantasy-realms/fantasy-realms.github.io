@@ -17,6 +17,7 @@ var languages = {
   'de': 'Deutsch',
   'es': 'Español',
   'fr': 'Français',
+  'pl': 'Polski',
   'ua': 'Українська',
 }
 
