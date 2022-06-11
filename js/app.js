@@ -20,6 +20,7 @@ var languages = {
   'pl': 'Polski',
   'ua': 'Українська',
   'cz': 'Čeština',
+  'kr': '한국어'
 }
 
 $(document).ready(function() {
