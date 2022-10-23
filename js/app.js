@@ -218,7 +218,7 @@ function selectFromHand(id) {
   if (card.cursedItem) {
     removeFromHand(id);
   } else if (actionId === BOOK_OF_CHANGES) {
-    if (id !== BOOK_OF_CHANGES) {
+    if (id !== BOOK_OF_CHANGES && id !== PHOENIX) {
       click.play();
       bookOfChangesSelectedCard = id;
       performBookOfChanges();
