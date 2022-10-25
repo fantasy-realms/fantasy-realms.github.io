@@ -117,6 +117,19 @@ class Hand {
     return count;
   }
 
+  countSuitWithPhoenix(suitName) {
+    var count = 0;
+    for (const card of this.nonBlankedCards()) {
+      if (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame')) {
+        count++;
+      }
+      if (card.suit === suitName) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   countSuitExcluding(suitName, excludingCardId) {
     var count = 0;
     for (const card of this.nonBlankedCards()) {
@@ -210,13 +223,19 @@ class Hand {
     for (const card of blanked) {
       card.blanked = true;
     }
-    for (const card of this.nonBlankedCards().sort((a, b) => a.id.localeCompare(b.id))) {
-      if (card.blankedIf !== undefined && !card.penaltyCleared) {
-        if (card.blankedIf(this) && !this._cannotBeBlanked(card)) {
-          card.blanked = true;
+    let cardBlanked = false;
+    do {
+      cardBlanked = false;
+      for (const card of this.nonBlankedCards().sort((a, b) => a.id.localeCompare(b.id))) {
+        if (card.blankedIf !== undefined && !card.penaltyCleared) {
+          if (card.blankedIf(this) && !this._cannotBeBlanked(card)) {
+            card.blanked = true;
+            cardBlanked = true;
+          }
         }
       }
-    }
+    } while (cardBlanked);
+
   }
 
   // a card that is blanked by another card cannot blank other cards,
