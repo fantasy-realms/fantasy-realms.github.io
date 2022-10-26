@@ -217,7 +217,7 @@ var base = {
     bonus: true,
     penalty: false,
     bonusScore: function(hand) {
-      return 15 * (hand.countSuitExcluding('weather', this.id)) + hand.containsId(PHOENIX, false) ? 15 : 0;
+      return 15 * (hand.countSuitExcluding('weather', this.id)) + (hand.containsId(PHOENIX, false) ? 15 : 0);
     },
     relatedSuits: ['weather'],
     relatedCards: []
@@ -285,7 +285,7 @@ var base = {
     bonus: true,
     penalty: false,
     bonusScore: function(hand) {
-      return 15 * (hand.countSuitExcluding('flame', this.id)) + hand.containsId(PHOENIX, false) ? 15 : 0;
+      return 15 * (hand.countSuitExcluding('flame', this.id)) + (hand.containsId(PHOENIX, false) ? 15 : 0);
     },
     relatedSuits: ['flame'],
     relatedCards: []
@@ -827,7 +827,7 @@ var base = {
     suit: 'beast',
     name: 'Phoenix',
     strength: 14,
-    bonus: false,
+    bonus: true,
     penalty: true,
     blankedIf: function(hand) {
       return hand.containsSuit('flood');
