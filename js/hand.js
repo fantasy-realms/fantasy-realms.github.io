@@ -409,7 +409,7 @@ class CardInHand {
         }
       } else if (this.id === ISLAND) {
         var selectedCard = hand.getCardById(this.actionData[0]);
-        if (selectedCard === undefined || !(selectedCard.suit === 'flood' || selectedCard.suit === 'flame')) {
+        if (selectedCard === undefined || !(selectedCard.suit === 'flood' || selectedCard.suit === 'flame' || selectedCard.id === PHOENIX)) {
           this.actionData = undefined;
         } else {
           this.clearsPenalty = function(card) {
