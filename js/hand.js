@@ -210,13 +210,18 @@ class Hand {
     for (const card of blanked) {
       card.blanked = true;
     }
-    for (const card of this.nonBlankedCards().sort((a, b) => a.id.localeCompare(b.id))) {
-      if (card.blankedIf !== undefined && !card.penaltyCleared) {
-        if (card.blankedIf(this) && !this._cannotBeBlanked(card)) {
-          card.blanked = true;
+    let cardBlanked = false;
+    do {
+      cardBlanked = false;
+      for (const card of this.nonBlankedCards().sort((a, b) => a.id.localeCompare(b.id))) {
+        if (card.blankedIf !== undefined && !card.penaltyCleared) {
+          if (card.blankedIf(this) && !this._cannotBeBlanked(card)) {
+            card.blanked = true;
+            cardBlanked = true;
+          }
         }
       }
-    }
+    } while (cardBlanked);
   }
 
   // a card that is blanked by another card cannot blank other cards,
