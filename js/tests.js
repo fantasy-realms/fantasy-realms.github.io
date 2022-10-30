@@ -43,6 +43,8 @@ $(document).ready(function() {
   assertScoreByCode('FR55,FR02,CH17,FR15,FR22,FR26,FR11+', 114, 'Phoenix also counts as a Weather');
   assertScoreByCode('FR55,FR13,FR20,FR17,FR26+', 94, 'Phoenix also counts as a Flame');
   assertScoreByCode('FR55,FR20,FR17,FR26,FR19,FR15,FR14,FR13+', 252, 'Phoenix is a Flame and a Weather at the same time');
+  assertScoreByCode('FR55,FR30+', 29, 'Phoenix gives double bonus for Enchantress');
+  assertScoreByCode('FR55,FR12+', 34, 'Phoenix gives double penalty for Blizzard');
   assertScoreByCode('FR55,CH21,FR15+', 35, 'Bonus of Phoenix prevents bonus of World Tree');
   assertScoreByCode('FR55,FR20,FR15,CH22,FR53,FR26,FR27+CH22:FR55,FR53:FR55', 109, 'Copy of a Phoenix only counts as a Beast');
 });

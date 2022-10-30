@@ -91,7 +91,7 @@ class Hand {
 
   containsSuit(suitName) {
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName) {
+      if (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) {
         return true;
       }
     }
@@ -100,7 +100,7 @@ class Hand {
 
   containsSuitExcluding(suitName, excludingCardId) {
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName && card.id !== excludingCardId) {
+      if ((card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) && card.id !== excludingCardId) {
         return true;
       }
     }
@@ -110,20 +110,7 @@ class Hand {
   countSuit(suitName) {
     var count = 0;
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName) {
-        count++;
-      }
-    }
-    return count;
-  }
-
-  countSuitWithPhoenix(suitName) {
-    var count = 0;
-    for (const card of this.nonBlankedCards()) {
-      if (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame')) {
-        count++;
-      }
-      if (card.suit === suitName) {
+      if (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) {
         count++;
       }
     }
@@ -133,7 +120,7 @@ class Hand {
   countSuitExcluding(suitName, excludingCardId) {
     var count = 0;
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName && card.id !== excludingCardId) {
+      if ((card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) && card.id !== excludingCardId) {
         count++;
       }
     }

@@ -99,7 +99,7 @@ var base = {
     bonus: false,
     penalty: true,
     penaltyScore: function(hand) {
-      var penaltyCards = hand.countSuit('flame') + hand.containsId(PHOENIX, false) ? 1 : 0;
+      var penaltyCards = hand.countSuit('flame');
       if (!isArmyClearedFromPenalty(this, hand)) {
         penaltyCards += hand.countSuit('army');
       }
@@ -191,7 +191,7 @@ var base = {
     bonus: false,
     penalty: true,
     blankedIf: function(hand) {
-      return !hand.containsSuit('flame') && !hand.containsId(PHOENIX, false);
+      return !hand.containsSuit('flame');
     },
     relatedSuits: ['flame'],
     relatedCards: []
@@ -217,7 +217,7 @@ var base = {
     bonus: true,
     penalty: false,
     bonusScore: function(hand) {
-      return 15 * (hand.countSuitExcluding('weather', this.id)) + (hand.containsId(PHOENIX, false) ? 15 : 0);
+      return 15 * hand.countSuitExcluding('weather', this.id);
     },
     relatedSuits: ['weather'],
     relatedCards: []
@@ -285,7 +285,7 @@ var base = {
     bonus: true,
     penalty: false,
     bonusScore: function(hand) {
-      return 15 * (hand.countSuitExcluding('flame', this.id)) + (hand.containsId(PHOENIX, false) ? 15 : 0);
+      return 15 * hand.countSuitExcluding('flame', this.id);
     },
     relatedSuits: ['flame'],
     relatedCards: []
@@ -311,7 +311,7 @@ var base = {
     bonus: true,
     penalty: false,
     bonusScore: function(hand) {
-      return hand.containsSuit('weather') || hand.containsId(PHOENIX, false) ? 0 : 5;
+      return hand.containsSuit('weather') ? 0 : 5;
     },
     relatedSuits: ['weather'],
     relatedCards: []
@@ -449,8 +449,7 @@ var base = {
     bonus: true,
     penalty: false,
     bonusScore: function(hand) {
-      return 5 * (hand.countSuit('land') + hand.countSuit('weather') + hand.countSuit('flood') + hand.countSuit('flame'))
-        + hand.containsId(PHOENIX, false) ? 5 : 0;
+      return 5 * (hand.countSuit('land') + hand.countSuit('weather') + hand.countSuit('flood') + hand.countSuit('flame'));
     },
     relatedSuits: ['land', 'weather', 'flood', 'flame'],
     relatedCards: []
@@ -656,7 +655,7 @@ var base = {
     bonus: false,
     penalty: true,
     blankedIf: function(hand) {
-      return (!hand.containsSuit('army') && !isArmyClearedFromPenalty(this, hand)) || hand.containsSuit('weather');
+      return (!hand.containsSuit('army') && !isArmyClearedFromPenalty(this, hand)) || hand.containsSuitExcluding('weather', PHOENIX);
     },
     relatedSuits: ['army', 'weather'],
     relatedCards: []
@@ -991,7 +990,7 @@ var cursedHoard = {
     bonus: false,
     penalty: true,
     blanks: function(card, hand) {
-      return card.suit !== 'outsider' && hand.countSuitWithPhoenix(card.suit) === 1 && card.id !== PHOENIX;
+      return card.suit !== 'outsider' && hand.countSuit(card.suit) === 1 && card.id !== PHOENIX;
     },
     relatedSuits: ['outsider'],
     relatedCards: []
