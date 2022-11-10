@@ -32,8 +32,21 @@ $(document).ready(function() {
   assertScoreByCode('FR21,FR45,FR13+', 47, 'War Dirigible + Smoke');
   assertScoreByCode('FR21,FR13,FR45+', 47, 'Smoke + War Dirigible');
   deck.enableCursedHoardSuits();
+  cursedHoardSuits = true;
   assertScoreByCode('CH10,FR41,FR10,FR07,FR22,FR23+', 114);
   assertScoreByCode('CH08,FR32,FR37+CH08:FR32', 57, 'Angel');
+  assertScoreByCode('FR55,FR37,FR16,FR11,CH08,FR49+CH08:FR16,FR49:FR37:wizard', 116, 'Phoenix can not be blanked by any card except Floods');
+  assertScoreByCode('FR55,CH10+', 59, 'Phoenix can not be blanked by Demon');
+  assertScoreByCode('FR55,CH10,FR18,FR15+', 87, 'Phoenix prevents blanking by Demon because of its bonus');
+  assertScoreByCode('CH18,FR55,FR27+', 41, 'Great Flood can still blank a Phoenix since it is a Flood');
+  assertScoreByCode('FR55,FR45,FR22+', 59, 'Phoenix can not blank any other card');
+  assertScoreByCode('FR55,FR02,CH17,FR15,FR22,FR26,FR11+', 114, 'Phoenix also counts as a Weather');
+  assertScoreByCode('FR55,FR13,FR20,FR17,FR26+', 94, 'Phoenix also counts as a Flame');
+  assertScoreByCode('FR55,FR20,FR17,FR26,FR19,FR15,FR14,FR13+', 252, 'Phoenix is a Flame and a Weather at the same time');
+  assertScoreByCode('FR55,FR30+', 29, 'Phoenix gives double bonus for Enchantress');
+  assertScoreByCode('FR55,FR12+', 34, 'Phoenix gives double penalty for Blizzard');
+  assertScoreByCode('FR55,CH21,FR15+', 35, 'Bonus of Phoenix prevents bonus of World Tree');
+  assertScoreByCode('FR55,FR20,FR15,CH22,FR53,FR26,FR27+CH22:FR55,FR53:FR55', 109, 'Copy of a Phoenix only counts as a Beast');
 });
 
 function assertScoreByName(cardNames, expectedScore, message) {

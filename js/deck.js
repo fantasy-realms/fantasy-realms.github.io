@@ -26,7 +26,7 @@ var base = {
       return hand.contains('Dwarvish Infantry') || hand.contains('Dragon') ? 25 : 0;
     },
     clearsPenalty: function(card) {
-      return card.suit === 'weather';
+      return card.suit === 'weather' || card.id === PHOENIX;
     },
     relatedSuits: ['weather'],
     relatedCards: ['Dwarvish Infantry', 'Dragon']
@@ -80,7 +80,7 @@ var base = {
     bonusScore: function(hand) {
       var max = 0;
       for (const card of hand.nonBlankedCards()) {
-        if (card.suit === 'weapon' || card.suit === 'flood' || card.suit === 'flame' || card.suit === 'land' || card.suit === 'weather') {
+        if (card.suit === 'weapon' || card.suit === 'flood' || card.suit === 'flame' || card.suit === 'land' || card.suit === 'weather' || card.id === PHOENIX) {
           if (card.strength > max) {
             max = card.strength;
           }
@@ -118,7 +118,7 @@ var base = {
     blanks: function(card, hand) {
       return (card.suit === 'army' && !isArmyClearedFromPenalty(this, hand)) ||
         (card.suit === 'land' && card.name !== 'Mountain') ||
-        (card.suit === 'flame' && card.name !== 'Lightning');
+        (card.suit === 'flame' && card.name !== 'Lightning') || card.id === PHOENIX;
     },
     relatedSuits: ['army', 'land', 'flame'],
     relatedCards: ['Mountain', 'Lightning']
@@ -232,7 +232,8 @@ var base = {
     blanks: function(card, hand) {
       return !(card.suit === 'flame' || card.suit === 'wizard' || card.suit === 'weather' ||
         card.suit === 'weapon' || card.suit === 'artifact' || card.suit === 'wild' || card.name === 'Mountain' ||
-        card.name === 'Great Flood' || card.name === 'Island' || card.name === 'Unicorn' || card.name === 'Dragon');
+        card.name === 'Great Flood' || card.name === 'Island' || card.name === 'Unicorn' || card.name === 'Dragon' ||
+        card.id === PHOENIX);
     },
     relatedSuits: allSuits(),
     relatedCards: ['Mountain', 'Great Flood', 'Island', 'Unicorn', 'Dragon']
@@ -368,6 +369,16 @@ var base = {
     bonusScore: function(hand) {
       var bySuit = {};
       for (const card of hand.nonBlankedCards()) {
+        if (card.id === PHOENIX) {
+          if (bySuit['flame'] === undefined) {
+            bySuit['flame'] = {};
+          }
+          bySuit['flame'][card.name] = card;
+          if (bySuit['weather'] === undefined) {
+            bySuit['weather'] = {};
+          }
+          bySuit['weather'][card.name] = card;
+        }
         var suit = card.suit;
         if (bySuit[suit] === undefined) {
           bySuit[suit] = {};
@@ -540,7 +551,7 @@ var base = {
     blanks: function(card, hand) {
       return (card.suit === 'army' && !isArmyClearedFromPenalty(this, hand)) ||
         card.suit === 'leader' ||
-        (card.suit === 'beast' && card.id !== this.id);
+        (card.suit === 'beast' && card.id !== this.id && card.id !== PHOENIX);
     },
     relatedSuits: ['army', 'leader', 'beast'],
     relatedCards: []
@@ -644,7 +655,7 @@ var base = {
     bonus: false,
     penalty: true,
     blankedIf: function(hand) {
-      return (!hand.containsSuit('army') && !isArmyClearedFromPenalty(this, hand)) || hand.containsSuit('weather');
+      return (!hand.containsSuit('army') && !isArmyClearedFromPenalty(this, hand)) || hand.containsSuitExcluding('weather', PHOENIX);
     },
     relatedSuits: ['army', 'weather'],
     relatedCards: []
@@ -710,6 +721,13 @@ var base = {
     bonusScore: function(hand) {
       var suits = [];
       for (const card of hand.nonBlankedCards()) {
+        if (card.id === PHOENIX) {
+          if (suits.includes('weather') || suits.includes('flame')) {
+            return 0;
+          }
+          suits.push('weather');
+          suits.push('flame');
+        }
         if (suits.includes(card.suit)) {
           return 0;
         }
@@ -802,7 +820,20 @@ var base = {
     },
     relatedSuits: [],
     relatedCards: []
-  }
+  },
+  'FR55': {
+    id: 'FR55',
+    suit: 'beast',
+    name: 'Phoenix',
+    strength: 14,
+    bonus: true,
+    penalty: true,
+    blankedIf: function(hand) {
+      return hand.containsSuit('flood');
+    },
+    relatedSuits: [],
+    relatedCards: []
+  },
 };
 
 var cursedHoard = {
@@ -959,7 +990,7 @@ var cursedHoard = {
     bonus: false,
     penalty: true,
     blanks: function(card, hand) {
-      return card.suit !== 'outsider' && hand.countSuit(card.suit) === 1;
+      return card.suit !== 'outsider' && hand.countSuit(card.suit) === 1 && card.id !== PHOENIX;
     },
     relatedSuits: ['outsider'],
     relatedCards: []
@@ -1059,7 +1090,7 @@ var cursedHoard = {
     bonusScore: function(hand) {
       var max = 0;
       for (const card of hand.nonBlankedCards()) {
-        if (card.suit === 'building' || card.suit === 'weapon' || card.suit === 'flood' || card.suit === 'flame' || card.suit === 'land' || card.suit === 'weather') {
+        if (card.suit === 'building' || card.suit === 'weapon' || card.suit === 'flood' || card.suit === 'flame' || card.suit === 'land' || card.suit === 'weather' || card.id === PHOENIX) {
           if (card.strength > max) {
             max = card.strength;
           }
@@ -1082,7 +1113,7 @@ var cursedHoard = {
       return (card.suit === 'army' && !isArmyClearedFromPenalty(this, hand)) ||
         (card.suit === 'building') ||
         (card.suit === 'land' && card.name !== 'Mountain') ||
-        (card.suit === 'flame' && card.name !== 'Lightning');
+        (card.suit === 'flame' && card.name !== 'Lightning') || card.name === 'Phoenix';
     },
     relatedSuits: ['army', 'building', 'land', 'flame'],
     relatedCards: ['Mountain', 'Lightning']
@@ -1124,6 +1155,13 @@ var cursedHoard = {
     bonusScore: function(hand) {
       var suits = [];
       for (const card of hand.nonBlankedCards()) {
+        if (card.id === PHOENIX) {
+          if (suits.includes('weather') || suits.includes('flame')) {
+            return 0;
+          }
+          suits.push('weather');
+          suits.push('flame');
+        }
         if (suits.includes(card.suit)) {
           return 0;
         }
@@ -1481,6 +1519,7 @@ var BOOK_OF_CHANGES = 'FR49';
 var SHAPESHIFTER = 'FR51';
 var MIRAGE = 'FR52';
 var DOPPELGANGER = 'FR53';
+var PHOENIX = 'FR55';
 
 var CH_NECROMANCER = 'CH20';
 var CH_SHAPESHIFTER = 'CH22';

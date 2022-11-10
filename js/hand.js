@@ -91,7 +91,7 @@ class Hand {
 
   containsSuit(suitName) {
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName) {
+      if (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) {
         return true;
       }
     }
@@ -100,7 +100,7 @@ class Hand {
 
   containsSuitExcluding(suitName, excludingCardId) {
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName && card.id !== excludingCardId) {
+      if ((card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) && card.id !== excludingCardId) {
         return true;
       }
     }
@@ -110,7 +110,7 @@ class Hand {
   countSuit(suitName) {
     var count = 0;
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName) {
+      if (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) {
         count++;
       }
     }
@@ -120,7 +120,7 @@ class Hand {
   countSuitExcluding(suitName, excludingCardId) {
     var count = 0;
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName && card.id !== excludingCardId) {
+      if ((card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) && card.id !== excludingCardId) {
         count++;
       }
     }
@@ -401,7 +401,7 @@ class CardInHand {
         }
       } else if (this.id === ISLAND) {
         var selectedCard = hand.getCardById(this.actionData[0]);
-        if (selectedCard === undefined || !(selectedCard.suit === 'flood' || selectedCard.suit === 'flame')) {
+        if (selectedCard === undefined || !(selectedCard.suit === 'flood' || selectedCard.suit === 'flame' || selectedCard.id === PHOENIX)) {
           this.actionData = undefined;
         } else {
           this.clearsPenalty = function(card) {
