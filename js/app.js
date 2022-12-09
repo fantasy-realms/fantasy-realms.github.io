@@ -20,7 +20,8 @@ var languages = {
   'pl': 'Polski',
   'ua': 'Українська',
   'cz': 'Čeština',
-  'kr': '한국어'
+  'kr': '한국어',
+  'ru': 'Русский'
 }
 
 $(document).ready(function () {
