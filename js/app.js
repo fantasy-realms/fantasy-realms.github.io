@@ -36,6 +36,7 @@ $(document).ready(function () {
     callback: function () {
       configureSelectedPlayerCount();
       configureSelectedExpansions();
+	  configureSound();
       showCards();
       getDiscardFromQueryString();
       getHandFromQueryString();
@@ -45,7 +46,7 @@ $(document).ready(function () {
       $('#ch_suits').change(function () {
         toggleCursedHoardSuits();
       });
-      $('#sound-state').change(function () {
+      $('#sound_state').change(function () {
         toggleSound();
       });
       updateLabels(lang);
@@ -124,6 +125,20 @@ function configureSelectedExpansions() {
   }
 }
 
+function configureSound() {
+  if (localStorage.getItem('sound_state') === true || localStorage.getItem('sound_state') === 'true') {
+    click.muted = swoosh.muted = clear.muted = magic.muted = false;
+    $('#sound_state').prop('checked', true);
+  } else if (localStorage.getItem('sound_state') === false || localStorage.getItem('sound_state') === 'false') {
+    click.muted = swoosh.muted = clear.muted = magic.muted = true;
+    $('#sound_state').prop('checked', false);
+  } else { // sound not yet saved
+	localStorage.setItem('sound_state', true);
+    click.muted = swoosh.muted = clear.muted = magic.muted = false;
+    $('#sound_state').prop('checked', true);
+  }
+}
+
 function configureSelectedPlayerCount() {
   if (window.location.search) {
     var params = window.location.search.substring(1).split('&');
@@ -162,6 +177,17 @@ function toggleCursedHoardSuits() {
   reset();
 }
 
+function toggleSound() {
+  if ($('#sound_state').prop('checked')){
+    localStorage.setItem('sound_state', true);
+    click.muted = swoosh.muted = clear.muted = magic.muted = false;
+  } else {
+	localStorage.setItem('sound_state', false);
+    click.muted = swoosh.muted = clear.muted = magic.muted = true;
+  }
+  reset();
+}
+
 function setPlayerCount(count) {
   click.play();
   playerCount = count;
@@ -181,11 +207,6 @@ function reset() {
   inputDiscardArea = false;
   $("#discard").hide();
   $("#hand").show();
-}
-
-function toggleSound() {
-  click.muted = swoosh.muted = clear.muted = magic.muted = !click.muted;
-  clear.play();
 }
 
 function addToView(id) {
