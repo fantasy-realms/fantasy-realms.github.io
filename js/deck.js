@@ -744,7 +744,7 @@ var base = {
         }
         suits.push(card.suit);
       }
-      return 50;
+      return 70;
     },
     relatedSuits: allSuits(),
     relatedCards: []
