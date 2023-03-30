@@ -18,6 +18,7 @@ var languages = {
   'es': 'Español',
   'fr': 'Français',
   'pl': 'Polski',
+  'pt': 'Português',
   'ua': 'Українська',
   'cz': 'Čeština',
   'kr': '한국어',
