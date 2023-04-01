@@ -1,5 +1,5 @@
 var APP_PREFIX = 'fantasy-realms-';
-var VERSION = '1.0.31';
+var VERSION = '1.0.32';
 var CACHE_NAME = APP_PREFIX + VERSION;
 var URLS = [
   '/',
@@ -29,6 +29,7 @@ var URLS = [
   'i18n/Messages_es.properties',
   'i18n/Messages_fr.properties',
   'i18n/Messages_pl.properties',
+  'i18n/Messages_pt.properties',
   'i18n/Messages_ua.properties',
   'i18n/Messages_kr.properties',
   'i18n/Messages_ru.properties',
