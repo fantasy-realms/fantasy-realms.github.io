@@ -37,7 +37,7 @@ $(document).ready(function () {
     callback: function () {
       configureSelectedPlayerCount();
       configureSelectedExpansions();
-	  configureSound();
+      configureSound();
       showCards();
       getDiscardFromQueryString();
       getHandFromQueryString();
@@ -127,16 +127,9 @@ function configureSelectedExpansions() {
 }
 
 function configureSound() {
-  if (localStorage.getItem('sound_state') === true || localStorage.getItem('sound_state') === 'true') {
-    click.muted = swoosh.muted = clear.muted = magic.muted = false;
-    $('#sound_state').prop('checked', true);
-  } else if (localStorage.getItem('sound_state') === false || localStorage.getItem('sound_state') === 'false') {
+  if (localStorage.getItem('sound_state') === false || localStorage.getItem('sound_state') === 'false') {
     click.muted = swoosh.muted = clear.muted = magic.muted = true;
     $('#sound_state').prop('checked', false);
-  } else { // sound not yet saved
-	localStorage.setItem('sound_state', true);
-    click.muted = swoosh.muted = clear.muted = magic.muted = false;
-    $('#sound_state').prop('checked', true);
   }
 }
 
@@ -179,14 +172,10 @@ function toggleCursedHoardSuits() {
 }
 
 function toggleSound() {
-  if ($('#sound_state').prop('checked')){
-    localStorage.setItem('sound_state', true);
-    click.muted = swoosh.muted = clear.muted = magic.muted = false;
-  } else {
-	localStorage.setItem('sound_state', false);
-    click.muted = swoosh.muted = clear.muted = magic.muted = true;
-  }
-  reset();
+  const enabled = $('#sound_state').prop('checked');
+  localStorage.setItem('sound_state', enabled);
+  click.muted = swoosh.muted = clear.muted = magic.muted = !enabled;
+  clear.play();
 }
 
 function setPlayerCount(count) {
