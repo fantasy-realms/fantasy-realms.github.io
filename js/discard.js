@@ -65,7 +65,7 @@ class Discard {
   }
 
   cardNames() {
-    return this.cards().map(function(card) {
+    return this.cards().map(function (card) {
       return card.name;
     });
   }

@@ -90,6 +90,9 @@ class Hand {
   }
 
   containsSuit(suitName) {
+    if (this.containsId(PHOENIX_PROMO, true) && (suitName === this.getCardById(PHOENIX_PROMO).suit || suitName === 'weather' || suitName === 'flame')) {
+      return true;
+    }
     for (const card of this.nonBlankedCards()) {
       if (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) {
         return true;
@@ -99,6 +102,9 @@ class Hand {
   }
 
   containsSuitExcluding(suitName, excludingCardId) {
+    if (excludingCardId !== PHOENIX_PROMO && this.containsId(PHOENIX_PROMO, true) && (suitName === this.getCardById(PHOENIX_PROMO).suit || suitName === 'weather' || suitName === 'flame')) {
+      return true;
+    }
     for (const card of this.nonBlankedCards()) {
       if ((card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) && card.id !== excludingCardId) {
         return true;
@@ -109,8 +115,11 @@ class Hand {
 
   countSuit(suitName) {
     var count = 0;
+    if (this.containsId(PHOENIX_PROMO, true) && (suitName === this.getCardById(PHOENIX_PROMO).suit || suitName === 'weather' || suitName === 'flame')) {
+      count++;
+    }
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) {
+      if (card.id !== PHOENIX_PROMO && (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame')))) {
         count++;
       }
     }
@@ -119,8 +128,11 @@ class Hand {
 
   countSuitExcluding(suitName, excludingCardId) {
     var count = 0;
+    if (excludingCardId !== PHOENIX_PROMO && this.containsId(PHOENIX_PROMO, true) && (suitName === this.getCardById(PHOENIX_PROMO).suit || suitName === 'weather' || suitName === 'flame')) {
+      count++;
+    }
     for (const card of this.nonBlankedCards()) {
-      if ((card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) && card.id !== excludingCardId) {
+      if (card.id !== PHOENIX_PROMO && (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) && card.id !== excludingCardId) {
         count++;
       }
     }
@@ -128,7 +140,7 @@ class Hand {
   }
 
   nonBlankedCards() {
-    return this.cards().filter(function(card) {
+    return this.cards().filter(function (card) {
       return !card.blanked;
     });
   }
@@ -142,7 +154,7 @@ class Hand {
   }
 
   cardNames() {
-    return this.cards().map(function(card) {
+    return this.cards().map(function (card) {
       return card.name;
     });
   }
@@ -275,7 +287,7 @@ class Hand {
   }
 
   _defaultLimit() {
-    return 7 + (cursedHoardSuits ? 1: 0);
+    return 7 + (cursedHoardSuits ? 1 : 0);
   }
 
   _limitWithoutNecromancer() {
@@ -301,7 +313,7 @@ class Hand {
         actions.push(card.id + ':' + card.actionData.join(':'));
       }
     }
-    return Object.keys({...this.cardsInHand, ...this.cursedItems}).join() + '+' + actions.join();
+    return Object.keys({ ...this.cardsInHand, ...this.cursedItems }).join() + '+' + actions.join();
   }
 
   loadFromString(string) {
@@ -401,10 +413,10 @@ class CardInHand {
         }
       } else if (this.id === ISLAND) {
         var selectedCard = hand.getCardById(this.actionData[0]);
-        if (selectedCard === undefined || !(selectedCard.suit === 'flood' || selectedCard.suit === 'flame' || selectedCard.id === PHOENIX)) {
+        if (selectedCard === undefined || !(selectedCard.suit === 'flood' || selectedCard.suit === 'flame' || isPhoenix(selectedCard))) {
           this.actionData = undefined;
         } else {
-          this.clearsPenalty = function(card) {
+          this.clearsPenalty = function (card) {
             return card.id === selectedCard.id;
           }
           selectedCard.magic = true;

@@ -1,7 +1,7 @@
 cursedHoardItems = false;
 cursedHoardSuits = false;
 
-$(document).ready(function() {
+$(document).ready(function () {
   assertScoreByName(['Blizzard', 'Great Flood', 'Elven Archers'], 35);
   assertScoreByName(['Smoke', 'Dwarvish Infantry', 'War Dirigible'], 50);
   assertScoreByName(['Candle', 'Smoke', 'Dwarvish Infantry', 'War Dirigible'], 44);
@@ -35,6 +35,7 @@ $(document).ready(function() {
   cursedHoardSuits = true;
   assertScoreByCode('CH10,FR41,FR10,FR07,FR22,FR23+', 114);
   assertScoreByCode('CH08,FR32,FR37+CH08:FR32', 57, 'Angel');
+  // Phoenix
   assertScoreByCode('FR55,FR37,FR16,FR11,CH08,FR49+CH08:FR16,FR49:FR37:wizard', 116, 'Phoenix can not be blanked by any card except Floods');
   assertScoreByCode('FR55,CH10+', 59, 'Phoenix can not be blanked by Demon');
   assertScoreByCode('FR55,CH10,FR18,FR15+', 87, 'Phoenix prevents blanking by Demon because of its bonus');
@@ -47,6 +48,15 @@ $(document).ready(function() {
   assertScoreByCode('FR55,FR12+', 34, 'Phoenix gives double penalty for Blizzard');
   assertScoreByCode('FR55,CH21,FR15+', 35, 'Bonus of Phoenix prevents bonus of World Tree');
   assertScoreByCode('FR55,FR20,FR15,CH22,FR53,FR26,FR27+CH22:FR55,FR53:FR55', 109, 'Copy of a Phoenix only counts as a Beast');
+  // Phoenix (Promo)
+  assertScoreByCode('FR55P,FR02,CH17,FR15,FR22,FR26,FR11+', 114, 'Phoenix (Promo) also counts as a Weather');
+  assertScoreByCode('FR55P,FR13,FR20,FR17,FR26+', 94, 'Phoenix (Promo) also counts as a Flame');
+  assertScoreByCode('FR55P,FR20,FR17,FR26,FR19,FR15,FR14,FR13+', 252, 'Phoenix (Promo) is a Flame and a Weather at the same time');
+  assertScoreByCode('FR55P,FR30+', 29, 'Phoenix (Promo) gives double bonus for Enchantress');
+  assertScoreByCode('FR55P,FR12+', 34, 'Phoenix (Promo) gives double penalty for Blizzard');
+  assertScoreByCode('FR55P,CH21,FR15+', 35, 'Bonus of Phoenix (Promo) prevents bonus of World Tree');
+  assertScoreByCode('FR55P,FR20,FR15,CH22,FR53,FR26,FR27+CH22:FR55,FR53:FR55P', 109, 'Copy of a Phoenix (Promo) only counts as a Beast');
+  assertScoreByCode('FR55P,FR10,FR20,FR15,FR36,FR38,FR26,CH05+', 132, 'Phoenix (Promo) retains suits when blanked');
 });
 
 function assertScoreByName(cardNames, expectedScore, message) {

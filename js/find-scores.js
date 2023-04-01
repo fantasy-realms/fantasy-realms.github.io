@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
   findMaxAndMinScore();
 });
 
@@ -80,7 +80,7 @@ async function findMaxAndMinScore() {
           if (add) {
             console.log('New top 10 hand', topHand);
             top10.push(topHand);
-            top10 = top10.sort(function(a, b) {
+            top10 = top10.sort(function (a, b) {
               return a.score > b.score ? -1 : 1
             });
             console.log('MAX', top10[0]);
@@ -102,7 +102,7 @@ async function findMaxAndMinScore() {
           if (add) {
             console.log('New bottom 10 hand', bottomHand);
             bottom10.push(bottomHand);
-            bottom10 = bottom10.sort(function(a, b) {
+            bottom10 = bottom10.sort(function (a, b) {
               return a.score > b.score ? 1 : -1
             });
             console.log('MIN', bottom10[0]);
@@ -171,7 +171,7 @@ function generateActionVariations(hand) {
   if (hand.containsId(ISLAND)) {
     var islandActions = [];
     for (const card of hand.cards()) {
-      if (((card.suit === 'Flood' || card.suit === 'Flame' || card.id === PHOENIX || hand.containsId(BOOK_OF_CHANGES)) && card.penalty) || card.id === DOPPELGANGER) {
+      if (((card.suit === 'Flood' || card.suit === 'Flame' || isPhoenix(card) || hand.containsId(BOOK_OF_CHANGES)) && card.penalty) || card.id === DOPPELGANGER) {
         islandActions.push([ISLAND, + card.id]);
       }
     }
