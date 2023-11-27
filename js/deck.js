@@ -1496,6 +1496,10 @@ var deck = {
     }
   },
   getCardById: function (id) {
+    if (typeof(id) == "number") {
+      id = id.toString()
+    }
+
     if (id.match(/^[0-9+]+$/)) {
       id = 'FR' + id.padStart(2, '0')
     }

@@ -3,6 +3,7 @@ $(document).ready(function () {
 });
 
 async function findMaxAndMinScore() {
+  cursedHoardSuits = false;
   var necromancer = true;
   var cards = 7;
   var parts = 1;
@@ -46,70 +47,76 @@ async function findMaxAndMinScore() {
       continue;
     }
     var baseCombinations = [combination];
-    if (necromancer && combination.includes(NECROMANCER)) {
-      var necromancerTargetCards = deck.getCardsBySuit(deck.getCardById(NECROMANCER).relatedSuits);
-      for (const suit of Object.keys(necromancerTargetCards)) {
-        for (const extraCard of necromancerTargetCards[suit]) {
-          if (!combination.includes(extraCard.id)) {
-            var handWithExtraCard = combination.slice();
-            handWithExtraCard.push(extraCard.id);
-            baseCombinations.push(handWithExtraCard);
+    try {
+      if (necromancer && combination.includes(NECROMANCER)) {
+        var necromancerTargetCards = deck.getCardsBySuit(deck.getCardById(NECROMANCER).relatedSuits);
+        for (const suit of Object.keys(necromancerTargetCards)) {
+          for (const extraCard of necromancerTargetCards[suit]) {
+            if (!combination.includes(extraCard.id)) {
+              var handWithExtraCard = combination.slice();
+              handWithExtraCard.push(extraCard.id);
+              baseCombinations.push(handWithExtraCard);
+            }
+          }
+        }
+      }
+      for (const baseCombination of baseCombinations) {
+        hand.loadFromArrays(baseCombination, []);
+        var actionVariations = generateActionVariations(hand);
+        totalVariations += actionVariations.length;
+        for (const variation of actionVariations) {
+          hand.loadFromArrays(baseCombination, variation);
+          var score = hand.score();
+          if (top10.length === 0 || score > top10[top10.length - 1].score) {
+            var topHand = {
+              score: score,
+              cardNames: hand.cardNames().join(),
+              code: hand.toString()
+            };
+            var add = true;
+            for (const existing of top10) {
+              if (existing.score === score) {
+                add = false;
+              }
+            }
+            if (add) {
+              console.log('New top 10 hand', topHand);
+              top10.push(topHand);
+              top10 = top10.sort(function (a, b) {
+                return a.score > b.score ? -1 : 1
+              });
+              console.log('MAX', top10[0]);
+              top10 = top10.slice(0, 10);
+            }
+          }
+          if (bottom10.length === 0 || score < bottom10[bottom10.length - 1].score) {
+            var bottomHand = {
+              score: score,
+              cardNames: hand.cardNames().join(),
+              code: hand.toString()
+            };
+            var add = true;
+            for (const existing of bottom10) {
+              if (existing.score === score) {
+                add = false;
+              }
+            }
+            if (add) {
+              console.log('New bottom 10 hand', bottomHand);
+              bottom10.push(bottomHand);
+              bottom10 = bottom10.sort(function (a, b) {
+                return a.score > b.score ? 1 : -1
+              });
+              console.log('MIN', bottom10[0]);
+              bottom10 = bottom10.slice(0, 10);
+            }
           }
         }
       }
     }
-    for (const baseCombination of baseCombinations) {
-      hand.loadFromArrays(baseCombination, []);
-      var actionVariations = generateActionVariations(hand);
-      totalVariations += actionVariations.length;
-      for (const variation of actionVariations) {
-        hand.loadFromArrays(baseCombination, variation);
-        var score = hand.score();
-        if (top10.length === 0 || score > top10[top10.length - 1].score) {
-          var topHand = {
-            score: score,
-            cardNames: hand.cardNames().join(),
-            code: hand.toString()
-          };
-          var add = true;
-          for (const existing of top10) {
-            if (existing.score === score) {
-              add = false;
-            }
-          }
-          if (add) {
-            console.log('New top 10 hand', topHand);
-            top10.push(topHand);
-            top10 = top10.sort(function (a, b) {
-              return a.score > b.score ? -1 : 1
-            });
-            console.log('MAX', top10[0]);
-            top10 = top10.slice(0, 10);
-          }
-        }
-        if (bottom10.length === 0 || score < bottom10[bottom10.length - 1].score) {
-          var bottomHand = {
-            score: score,
-            cardNames: hand.cardNames().join(),
-            code: hand.toString()
-          };
-          var add = true;
-          for (const existing of bottom10) {
-            if (existing.score === score) {
-              add = false;
-            }
-          }
-          if (add) {
-            console.log('New bottom 10 hand', bottomHand);
-            bottom10.push(bottomHand);
-            bottom10 = bottom10.sort(function (a, b) {
-              return a.score > b.score ? 1 : -1
-            });
-            console.log('MIN', bottom10[0]);
-            bottom10 = bottom10.slice(0, 10);
-          }
-        }
-      }
+    catch(error){
+      console.log("Error on hand scoring")
+      console.log("Iteration" + i.toString())
     }
   }
   console.log(totalVariations);
@@ -172,7 +179,7 @@ function generateActionVariations(hand) {
     var islandActions = [];
     for (const card of hand.cards()) {
       if (((card.suit === 'Flood' || card.suit === 'Flame' || isPhoenix(card) || hand.containsId(BOOK_OF_CHANGES)) && card.penalty) || card.id === DOPPELGANGER) {
-        islandActions.push([ISLAND, + card.id]);
+        islandActions.push([ISLAND, card.id]);
       }
     }
     if (islandActions.length > 0) {

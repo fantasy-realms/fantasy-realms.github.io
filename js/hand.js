@@ -48,6 +48,10 @@ class Hand {
   }
 
   _normalizeId(id) {
+    if (typeof(id) == "number") {
+      id = id.toString()
+    }
+
     if (id.match(/^[0-9+]+$/)) {
       return 'FR' + id.padStart(2, '0');
     }
@@ -215,7 +219,7 @@ class Hand {
     }
     var blanked = [];
     for (const card of this.nonBlankedCards()) {
-      if (this._cardBlanked(card, card)) {
+      if (this._cardBlanked(card, [card])) {
         blanked.push(card);
       }
     }
@@ -236,18 +240,63 @@ class Hand {
     } while (cardBlanked);
   }
 
-  // a card that is blanked by another card cannot blank other cards,
-  // except when they blank eachother
-  _cardBlanked(card, target) {
+  // Checks if a card is blanked by other cards in the hand recursively.
+  // Stack keeps track of the traversed cards to detect cycles.
+  _cardBlanked(card, stack) {
+
+    // Card cannot be blanked -> return false
     if (this._cannotBeBlanked(card)) {
       return false;
     }
+
+    // List potential blankers
+    var blankers = []
+    // for each card of the hand that isn't blanked
     for (const by of this.nonBlankedCards()) {
-      if (by.blanks !== undefined && !by.penaltyCleared && by.id !== CH_DEMON && by.blanks(card, this)) {
-        if (by === target || (card.blanks !== undefined && card.blanks(by, this)) || !this._cardBlanked(by, target)) {
+      // other card cannot blank at all -> ignore
+      if (by.blanks === undefined) {
+        continue;
+      }
+      // other card has its penalty cleared -> will not blank anyhting
+      if (by.penaltyCleared) {
+        continue;
+      }
+      // Demon handled separately
+      if (by.id === CH_DEMON) {
+        continue;
+      }
+      // Other card potentially blanks
+      if (by.blanks(card, this)){
+        blankers.push(by)
+      }
+    }
+
+    // There are no cards that could blank -> return false.
+    if (blankers.length == 0) {
+      return false;
+    }
+
+    // Detect mutual blanking and cycles
+    var effectiveBlankers = []
+    for (const by of blankers) {
+      // Card and by mutually blank eachother
+      if (card.blanks !== undefined && card.blanks(by, this)) {
+        return true;
+      }
+
+      // Card and by are part of a cycle of blanks
+      if (stack.includes(by)) {
+        return true;
+      }
+      effectiveBlankers.push(by)
+    }
+
+    // Finally, recurse down.
+    //At least one of the blankers isn't themselves blanked -> `card` is blanked
+    for (const by of effectiveBlankers) {
+        if (!this._cardBlanked(by, stack.concat([by]))) {
           return true;
         }
-      }
     }
     return false;
   }
