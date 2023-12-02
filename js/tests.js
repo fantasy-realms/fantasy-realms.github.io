@@ -27,6 +27,10 @@ $(document).ready(function () {
   assertScoreByCode('FR49,FR41,FR37,FR21+FR49:FR37:flood', 73, 'Blanking III');
   assertScoreByCode('FR49,FR41,FR24,FR22+FR49:FR24:flood', 56, 'Blanking IV');
   assertScoreByCode('FR49,FR41,FR06,FR08,FR22+FR49:FR08:wizard', 82, 'Blanking V');
+  assertScoreByCode('FR08,FR12,FR16+', 65, 'Blanking cycle (base case) - Rulebook Q&A'); // Blizzard: 30 - 5  + Wildfire: 40 = 65
+  assertScoreByCode('FR02,FR08,FR12,FR16+', 62, 'Blanking cycle (with cavern) - Rulebook Q&A'); // Blizzard: 30 + Flood: 32 = 62
+  assertScoreByCode('FR08,FR12,FR16,FR49+FR49:FR12:beast', 3, 'Blanking cycle (with book changing Blizzard to beast)'); // Assuming cycle blanks itself, only book is active
+  assertScoreByCode('FR02,FR08,FR12,FR16,FR49+FR49:FR12:beast', 9, 'Blanking cycle (with cavern and book)'); // Cycle blanks itself. Cavern isn't blanked : 6 + book 3 = 9
   assertScoreByCode('FR49,FR41,FR45,FR23,FR15+FR49:FR45:flood', 24, 'War Dirigible and Warship are blanked');
   assertScoreByCode('FR49,FR41,FR45+FR49:FR45:flood', 61, 'War Dirigible does not need Army when Army cleared from penalty');
   assertScoreByCode('FR49,FR45,FR25+FR49:FR25:land', 53, 'War Dirigible does not need Army when Army cleared from penalty');
