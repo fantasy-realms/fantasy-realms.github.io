@@ -1,4 +1,4 @@
-<html lang="en" manifest="fantasy-realms.appcache">
+<html lang="en" manifest="fantasy-realms-nocache.appcache">
 
 <head>
   <meta charset="utf-8">
@@ -9,6 +9,9 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
+  <meta http-equiv='cache-control' content='no-cache'>
+  <meta http-equiv='expires' content='0'>
+  <meta http-equiv='pragma' content='no-cache'>
   <link rel="apple-touch-icon" sizes="57x57" href="icons/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="icons/apple-icon-60x60.png">
   <link rel="apple-touch-icon" sizes="72x72" href="icons/apple-icon-72x72.png">
@@ -29,10 +32,10 @@
   <script src="js/jquery.i18n.properties.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/handlebars.min-v4.7.7.js"></script>
-  <script src="js/deck.js"></script>
+  <script src="js/deck.js?v=0.1"></script>
   <script src="js/discard.js"></script>
-  <script src="js/hand.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/hand.js?v=0.1"></script>
+  <script src="js/app.js?v=0.1"></script>
 </head>
 
 <body>
@@ -65,7 +68,7 @@
     {{#each playerCards}}
     <div id="card-{{id}}" class="card" onclick="selectFromHand('{{id}}')">
       <ul class="list-group">
-        <li class="list-group-item {{suit}} {{#if blanked}}blanked{{/if}}">
+        <li class="list-group-item {{suit}}{{altSuits.[0]}}{{altSuits.[1]}} {{#if blanked}}blanked{{/if}}">
           <span class="badge badge-secondary">
             {{#if blanked}}
               {{i18n 'label.blanked'}}
@@ -181,6 +184,10 @@
               <input type="checkbox" class="custom-control-input" id="ch_suits">
               <label id="lbl_ch_suits" class="custom-control-label" for="ch_suits">Buildings/Outsiders/Undead</label>
             </div>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="rrg_edition">
+              <label id="lbl_rrg_edition" class="custom-control-label" for="rrg_edition">ReReadGames Edition</label>
+            </div>
           </div>
           <div id="language" class="dropdown">
             <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="language-selector" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -227,7 +234,7 @@
 
 <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js');
+    navigator.serviceWorker.register('service-worker.js');
   }
 </script>
 

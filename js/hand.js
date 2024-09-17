@@ -94,11 +94,8 @@ class Hand {
   }
 
   containsSuit(suitName) {
-    if (this.containsId(PHOENIX_PROMO, true) && (suitName === this.getCardById(PHOENIX_PROMO).suit || suitName === 'weather' || suitName === 'flame')) {
-      return true;
-    }
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) {
+      if (card.suit === suitName || (Array.isArray(card.altSuits) && card.altSuits.includes(suitName))) {
         return true;
       }
     }
@@ -106,11 +103,8 @@ class Hand {
   }
 
   containsSuitExcluding(suitName, excludingCardId) {
-    if (excludingCardId !== PHOENIX_PROMO && this.containsId(PHOENIX_PROMO, true) && (suitName === this.getCardById(PHOENIX_PROMO).suit || suitName === 'weather' || suitName === 'flame')) {
-      return true;
-    }
     for (const card of this.nonBlankedCards()) {
-      if ((card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) && card.id !== excludingCardId) {
+      if ((card.suit === suitName || (Array.isArray(card.altSuits) && card.altSuits.includes(suitName))) && card.id !== excludingCardId) {
         return true;
       }
     }
@@ -119,11 +113,8 @@ class Hand {
 
   countSuit(suitName) {
     var count = 0;
-    if (this.containsId(PHOENIX_PROMO, true) && (suitName === this.getCardById(PHOENIX_PROMO).suit || suitName === 'weather' || suitName === 'flame')) {
-      count++;
-    }
     for (const card of this.nonBlankedCards()) {
-      if (card.id !== PHOENIX_PROMO && (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame')))) {
+      if (card.suit === suitName || (Array.isArray(card.altSuits) && card.altSuits.includes(suitName))) {
         count++;
       }
     }
@@ -132,11 +123,8 @@ class Hand {
 
   countSuitExcluding(suitName, excludingCardId) {
     var count = 0;
-    if (excludingCardId !== PHOENIX_PROMO && this.containsId(PHOENIX_PROMO, true) && (suitName === this.getCardById(PHOENIX_PROMO).suit || suitName === 'weather' || suitName === 'flame')) {
-      count++;
-    }
     for (const card of this.nonBlankedCards()) {
-      if (card.id !== PHOENIX_PROMO && (card.suit === suitName || (card.id === PHOENIX && (suitName === 'weather' || suitName === 'flame'))) && card.id !== excludingCardId) {
+      if ((card.suit === suitName || (Array.isArray(card.altSuits) && card.altSuits.includes(suitName))) && card.id !== excludingCardId) {
         count++;
       }
     }
@@ -402,9 +390,13 @@ class CardInHand {
     this.card = card;
     this.actionData = actionData;
     // TODO: is there a better way to copy these properties
-    this.id = card.id;
+    
+    Object.assign(this, card);
+
+    /* this.id = card.id;
     this.name = card.name;
     this.suit = card.suit;
+    this.altSuits = card.altSuits;
     this.strength = card.strength;
     this.bonus = card.bonus;
     this.penalty = card.penalty;
@@ -422,12 +414,39 @@ class CardInHand {
     this.impersonator = card.impersonator;
     this.timing = card.timing;
     this.cursedItem = card.cursedItem;
+    this.unselectable = card.unselectable; */
 
     this.blanked = false;
     this.penaltyCleared = false;
     this.penaltyPoints = 0;
     this.bonusPoints = 0;
     this.magic = false;
+  }
+
+  deepClone(obj) {
+    // Check if the value is a function
+    if (typeof obj === 'function') {
+      return obj; // Return the function as is (functions are immutable)
+    }
+  
+    // Handle Arrays
+    if (Array.isArray(obj)) {
+      return obj.map(deepClone);
+    }
+  
+    // Handle Objects
+    if (typeof obj === 'object' && obj !== null) {
+      const clonedObj = {};
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          clonedObj[key] = deepClone(obj[key]); // Recursively clone each property
+        }
+      }
+      return clonedObj;
+    }
+  
+    // For primitive types, return the value directly
+    return obj;
   }
 
   performCardAction(hand) {
@@ -460,7 +479,7 @@ class CardInHand {
           this.blankedIf = selectedCard.blankedIf
           this.magic = true;
         }
-      } else if (this.id === ISLAND) {
+      } else if (this.id === ISLAND || this.id == RRG_RIVER) {
         var selectedCard = hand.getCardById(this.actionData[0]);
         if (selectedCard === undefined || !(selectedCard.suit === 'flood' || selectedCard.suit === 'flame' || isPhoenix(selectedCard))) {
           this.actionData = undefined;
@@ -475,6 +494,33 @@ class CardInHand {
         if (selectedCard === undefined) {
           this.actionData = undefined;
         } else {
+          selectedCard.magic = true;
+        }
+      } else if (this.id === RRG_WAND) {
+        var selectedCard = hand.getCardById(this.actionData[0]);
+        if (selectedCard === undefined || selectedCard.unselectable || selectedCard.id == this.id) {
+          this.actionData = undefined;
+        } else {
+          var oxen = rrgExtraItems[RRG_OXEN];
+          selectedCard.name = oxen.name;
+          selectedCard.suit = oxen.suit;
+          selectedCard.impersonator = oxen.impersonator;
+          selectedCard.strength = oxen.strength;
+          selectedCard.penalty = oxen.penalty;
+          selectedCard.bonus = oxen.bonus;
+          selectedCard.bonusScore = oxen.bonusScore;
+          selectedCard.penaltyScore = oxen.penaltyScore
+          selectedCard.action = oxen.action;
+          selectedCard.actionData = [oxen.id];
+          selectedCard.magic = true;
+        }
+      } else if (this.id === RRG_KNIGHT) {
+        var selectedCard = hand.getCardById(this.actionData[0]);
+        if (selectedCard === undefined || selectedCard.unselectable || selectedCard.id == this.id) {
+          this.actionData = undefined;
+        } else {
+          selectedCard.penaltyScore = ()=>0;
+          selectedCard.penaltyCleared = true;
           selectedCard.magic = true;
         }
       }

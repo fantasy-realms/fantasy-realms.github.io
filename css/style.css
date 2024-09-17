@@ -220,6 +220,14 @@ li.beast {
   background-color: var(--beast-color);
 }
 
+li.beastflame {
+  background: linear-gradient(to right, var(--beast-color) 50%, var(--flame-color) 50%);
+}
+
+li.beastflameweather {
+  background: linear-gradient(to right, var(--beast-color) 33%, var(--flame-color) 33%, var(--flame-color) 66%, var(--weather-color) 66%);
+}
+
 span.beast {
   color: var(--beast-color);
 }

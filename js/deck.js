@@ -171,9 +171,12 @@ var base = {
     bonus: false,
     penalty: true,
     penaltyScore: function (hand) {
-      var penaltyCards = hand.countSuit('leader') + hand.countSuit('beast') + hand.countSuit('flame');
+      var penaltyCards = hand.countSuit('beast') + hand.countSuit('flame');
       if (!isArmyClearedFromPenalty(this, hand)) {
         penaltyCards += hand.countSuit('army');
+      }
+      if (!isLeaderClearedFromPenalty(this, hand)) {
+        penaltyCards += hand.countSuit('leader')
       }
       return -5 * penaltyCards;
     },
@@ -236,7 +239,7 @@ var base = {
         isPhoenix(card));
     },
     relatedSuits: allSuits(),
-    relatedCards: ['Mountain', 'Great Flood', 'Island', 'Unicorn', 'Dragon']
+    relatedCards: ['Mountain', 'Great Flood', 'Island', 'Unicorn', 'Dragon', 'River']
   },
   'FR17': {
     id: 'FR17',
@@ -298,7 +301,10 @@ var base = {
     bonus: false,
     penalty: true,
     penaltyScore: function (hand) {
-      return hand.containsSuit('leader') ? 0 : -8;
+      if (!isLeaderClearedFromPenalty(this, hand)) {
+        return hand.containsSuit('leader') ? 0 : -8;
+      }
+      return 0;
     },
     relatedSuits: ['leader'],
     relatedCards: []
@@ -447,7 +453,8 @@ var base = {
     bonus: false,
     penalty: true,
     penaltyScore: function (hand) {
-      return -10 * (hand.countSuit('leader') + hand.countSuitExcluding('wizard', this.id));
+      var leaderCount = !isLeaderClearedFromPenalty(this, hand) ? 0 : hand.countSuit('leader');
+      return -10 * (leaderCount + hand.countSuitExcluding('wizard', this.id));
     },
     relatedSuits: ['leader', 'wizard'],
     relatedCards: []
@@ -534,7 +541,10 @@ var base = {
       return 10 * hand.countSuit('army');
     },
     penaltyScore: function (hand) {
-      return -5 * hand.countSuitExcluding('leader', this.id);
+      if (!isLeaderClearedFromPenalty(this, hand)) {
+        return -5 * hand.countSuitExcluding('leader', this.id);
+      }
+      return 0;
     },
     relatedSuits: ['army', 'leader'],
     relatedCards: []
@@ -561,7 +571,7 @@ var base = {
     penalty: true,
     blanks: function (card, hand) {
       return (card.suit === 'army' && !isArmyClearedFromPenalty(this, hand)) ||
-        card.suit === 'leader' ||
+        (card.suit === 'leader' && !isLeaderClearedFromPenalty(this, hand)) ||
         (card.suit === 'beast' && card.id !== this.id && card.id !== PHOENIX);
     },
     relatedSuits: ['army', 'leader', 'beast'],
@@ -843,6 +853,7 @@ var base = {
   'FR55': {
     id: 'FR55',
     suit: 'beast',
+    altSuits: ['flame', 'weather'],
     name: 'Phoenix',
     strength: 14,
     bonus: true,
@@ -856,6 +867,7 @@ var base = {
   'FR55P': {
     id: 'FR55P',
     suit: 'beast',
+    altSuits: ['flame', 'weather'],
     name: 'Phoenix (Promo)',
     strength: 14,
     bonus: true,
@@ -920,7 +932,7 @@ var cursedHoard = {
       return total;
     },
     blanks: function (card, hand) {
-      return card.suit === 'leader';
+      return card.suit === 'leader' && !isLeaderClearedFromPenalty(this, hand);
     },
     relatedSuits: ['undead', 'leader'],
     relatedCards: []
@@ -1467,8 +1479,316 @@ var cursedItems = {
   }
 }
 
+var rrgItems = {
+  'RG01': {
+    id: 'RG01',
+    suit: 'flood',
+    name: 'River',
+    strength: 15,
+    bonus: true,
+    penalty: false,
+    action: true,
+    bonusScore: function (hand) {
+      return 0;
+    },
+    relatedSuits: ['flood', 'fire'],
+    relatedCards: ['Bridge']
+  },
+  'RG02': {
+    id: 'RG02',
+    suit: 'flood',
+    name: 'Bridge',
+    strength: 13,
+    bonus: true,
+    penalty: false,
+    bonusScore: function (hand) {
+      var strengths = hand.nonBlankedCards().map(card => card.strength).sort(function (a, b) { return a - b; });
+      var bonus = strengths[strengths.length - 1] - strengths[0];
+      if (hand.containsId("RG01")) {
+        bonus += 20;
+      }
+      return bonus;
+    },
+    relatedSuits: ['flood'],
+    relatedCards: ['River']
+  },
+  'RG03': {
+    id: 'RG03',
+    suit: 'wizard',
+    name: 'Juggler',
+    strength: 3,
+    bonus: true,
+    penalty: false,
+    bonusScore: function (hand) {
+      var oddCards = hand.nonBlankedCards().map(card => card.strength).filter(function (a) { return (a % 2) - 1 == 0; });
+      if (oddCards.length >= 7) {
+        return 57;
+      }
+      return (oddCards.length - 1) * 3; //without itself
+    },
+    relatedSuits: [],
+    relatedCards: []
+  },
+  'RG04': {
+    id: 'RG04',
+    suit: 'weapon',
+    name: 'Trebuchet',
+    strength: 32,
+    bonus: true,
+    penalty: true,
+    blankedIf: function (hand) {
+      return !hand.containsSuit('army');
+    },
+    bonusScore: function (hand) {
+      return 0; //TODO
+    },
+    relatedSuits: ['army'],
+    relatedCards: []
+  },
+  'RG05': {
+    id: 'RG05',
+    suit: 'beast',
+    altSuits: ['flame'],
+    name: 'Phoenix',
+    replaces: ['FR55', 'FR55P'],
+    unselectable: true,
+    strength: 20,
+    bonus: true,
+    penalty: true,
+    penaltyScore: function (hand) {
+      return hand.containsSuit('flood') ? -8 : 0;
+    },
+    relatedSuits: [],
+    relatedCards: []
+  },
+  'RG06': {
+    id: 'RG06',
+    suit: 'weapon',
+    name: 'Wand',
+    replaces: 'FR42',
+    strength: 1,
+    action: true,
+    bonus: true,
+    bonusScore: function(hand) {
+      return hand.containsSuit('wizard') ? 25 : 0;
+    },
+    penalty: false,
+    relatedSuits: ['wizard'], //TODO --> Magier
+    relatedCards: []
+  },
+  'RG07': {
+    id: 'RG07',
+    suit: 'army',
+    name: 'Monster hunter',
+    strength: 10,
+    bonus: true,
+    bonusScore: function(hand) {
+      var beastsInList = 0;
+      for (const beast of ['Basilisk', 'Dragon', 'Unicorn', 'Hydra']) {
+        beastsInList += (hand.contains(beast) ? 1 : 0)
+      }
+      return beastsInList == 1 ? 25 : 0;
+    },
+    penalty: false,
+    blankedIf: function(hand) {
+      return false //TODO hand.containsId("[BÄNDIGER_ID]")
+    },
+    relatedSuits: ['beast'],
+    relatedCards: []
+  },
+  'RG08': {
+    id: 'RG08',
+    suit: 'army',
+    name: 'Dwarfs',
+    replaces: 'FR24',
+    strength: 15,
+    bonus: false,
+    penalty: true,
+    penaltyScore: function(hand) {
+      return -3 * hand.countSuitExcluding('army', this.id);
+    },
+    relatedSuits: ['army'],
+    relatedCards: []
+  },
+  'RG09': {
+    id: 'RG09',
+    suit: 'army',
+    name: 'Elves',
+    replaces: 'FR22',
+    strength: 9,
+    bonus: true,
+    bonusScore: function(hand) {
+      var bonus = 0;
+      if (hand.containsId('[MOND_ID]')) {
+        bonus += 15;
+      }
+      if (hand.contains('Forest')) {
+        bonus += 25;
+      }
+      return bonus;
+    },
+    penalty: false,
+    relatedSuits: [],
+    relatedCards: ['Forest'] //TODO: Mond
+  },
+  'RG10': {
+    id: 'RG10',
+    suit: 'army',
+    name: 'Guard',
+    strength: 11,
+    bonus: true,
+    penalty: false,
+    relatedSuits: ['leader'],
+    relatedCards: []
+  },
+  'RG11': {
+    id: 'RG11',
+    suit: 'army',
+    name: 'Scout',
+    replaces: 'FR25',
+    strength: 6,
+    bonus: true,
+    bonusScore: function(hand) {
+      return 10 * hand.countSuit('land');
+    },
+    penalty: false,
+    relatedSuits: ['land', 'flame', 'flood', 'weather'],
+    relatedCards: []
+  },
+  'RG12': {
+    id: 'RG12',
+    suit: 'army',
+    name: 'Knight',
+    replaces: 'FR21',
+    strength: 24,
+    bonus: true,
+    bonusScore: ()=>0,
+    penalty: true,
+    penaltyScore: function(hand) {
+      return hand.countSuit('leader') < 1 ? -10 : 0;
+    },
+    action: true,
+    relatedSuits: ['land', 'flame', 'flood', 'weather'],
+    relatedCards: []
+  },
+  'RG13': {
+    id: 'RG13',
+    suit: 'leader',
+    name: 'Field mistress',
+    replaces: 'FR34',
+    strength: 4,
+    bonus: true,
+    penalty: false,
+    bonusScore: function (hand) {
+      var total = 0;
+      for (const card of hand.nonBlankedCards()) {
+        if (card.suit === 'army') {
+          total += card.strength;
+        }
+      }
+      return total;
+    },
+    relatedSuits: ['army'],
+    relatedCards: []
+  },
+  'RG14': {
+    id: 'RG14',
+    suit: 'leader',
+    name: 'King',
+    replaces: 'FR31',
+    strength: 7,
+    bonus: true,
+    penalty: false,
+    bonusScore: function (hand) {
+      return (hand.contains('Queen') ? 30 : 6) * (hand.countSuit('artifact')+hand.countSuit('land'));
+    },
+    relatedSuits: ['army'],
+    relatedCards: ['Queen']
+  },
+  'RG15': {
+    id: 'RG15',
+    suit: 'leader',
+    name: 'Queen',
+    replaces: 'FR32',
+    strength: 7,
+    bonus: true,
+    penalty: false,
+    bonusScore: function (hand) {
+      return (hand.contains('King') ? 30 : 6) * (hand.countSuit('army')+hand.countSuit('weapon'));
+    },
+    relatedSuits: ['army'],
+    relatedCards: ['King']
+  },
+  'RG16': {
+    id: 'RG16',
+    suit: 'leader',
+    name: 'Scholar',
+    strength: 4,
+    bonus: true,
+    penalty: false,
+    bonusScore: function (hand) {
+      var quoteCount = 0;
+      for (const card of hand.nonBlankedCards()) {
+        if (card.id == this.id) {
+          continue;
+        }
+        var cardName = jQuery.i18n.prop(card.id + '.name');
+        for (const card2 of hand.nonBlankedCards()) {
+          if (card2.id === card.id || card2.id === this.id) {
+            continue;
+          }
+          if (card2.bonus) {
+            var card2Bonus = jQuery.i18n.prop(card2.id + '.bonus');
+            quoteCount += countInstances(card2Bonus, cardName);
+          }
+          if (card2.penalty) {
+            var card2Penalty = jQuery.i18n.prop(card2.id + '.penalty');
+            quoteCount += countInstances(card2Penalty, cardName);
+          }
+        }
+      }
+      return quoteCount * 12;
+    },
+    relatedSuits: ['army'],
+    relatedCards: ['Queen']
+  },
+  'RG17': {
+    id: 'RG17',
+    suit: 'leader',
+    name: 'Ruler',
+    strength: 15,
+    bonus: true,
+    bonusScore: function (hand) {
+      return 10 * hand.countSuit('army');
+    },
+    penalty: true,
+    penaltyScore: function(hand) {
+      return -8 * hand.countSuitExcluding('leader', this.id)
+    },
+    relatedSuits: ['army'],
+    relatedCards: ['King']
+  },
+}
+
+var rrgExtraItems = {
+  'RGE01': {
+    id: 'RGE01',
+    suit: 'beast',
+    name: 'Oxen',
+    impersonator: true,
+    strength: 10,
+    bonus: false,
+    bonusScore: ()=>0,
+    penalty: false,
+    penaltyScore: ()=>0,
+    action: false,
+    relatedSuits: [],
+    relatedCards: []
+  }
+}
+
 var deck = {
-  cards: { ...base },
+  cards: { ...base, ...rrgItems },
   cursedItems: {},
   enableCursedHoardSuits: function () {
     this.cards = { ...base, ...cursedHoard };
@@ -1487,6 +1807,24 @@ var deck = {
   },
   disableCursedHoardItems: function () {
     this.cursedItems = {};
+  },
+  enableRereadgamesEdition: function () {
+    this.cards = { ...base, ...rrgItems }
+    for (const id in rrgItems) {
+      const card = this.cards[id];
+      if (card.replaces) {
+        if (Array.isArray(card.replaces)) {
+          for (const repl of card.replaces) {
+            delete this.cards[repl];
+          }
+        } else {
+          delete this.cards[card.replaces];
+        }
+      }
+    }
+  },
+  disableRereadgamesEdition: function () {
+    this.cards = { ...base }
   },
   getCardByName: function (cardName) {
     for (const id in this.cards) {
@@ -1545,10 +1883,28 @@ var deck = {
   }
 };
 
+function countInstances(string, word) {
+  var count = string.split(word).length - 1;
+  if (count > 0) {
+    console.log("Found literal reference: " + word + " in string: " + string);
+  }
+  return count
+}
+
 function isArmyClearedFromPenalty(card, hand) {
   // FR25, CH19: Rangers: CLEARS the word Army from all Penalties
   // FR41: Warship: CLEARS the word Army from all Penalties of all Floods
-  return hand.containsId('FR25', true) || hand.containsId('CH19', true) || (card.suit === 'flood' && hand.containsId('FR41', true));
+  // RG07: Monster hunter: CLEARS the word Army from all Penalties of all Beasts
+  // RG11: Scout: CLEARS the word Army from all Penalties of all Flames, Floods and Weathers
+  return hand.containsId('FR25', true) || hand.containsId('CH19', true) || 
+    (card.suit === 'flood' && hand.containsId('FR41', true)) || 
+    (card.suit === 'beast' && hand.containsId('RG07', true)) ||
+    (['flame', 'flood', 'weather'].includes(card.suit) && hand.containsId('RG11', true));
+}
+
+function isLeaderClearedFromPenalty(card, hand) {
+  // RG10: Guard: CLEARS the word Leader from all Penalties
+  return hand.containsId('RG10', true);
 }
 
 function allSuits() {
@@ -1569,6 +1925,11 @@ var DOPPELGANGER = 'FR53';
 var PHOENIX = 'FR55';
 var PHOENIX_PROMO = 'FR55P';
 
+var RRG_RIVER = 'RG01';
+var RRG_WAND = 'RG06';
+var RRG_OXEN = 'RGE01';
+var RRG_KNIGHT = 'RG12';
+
 var CH_NECROMANCER = 'CH20';
 var CH_SHAPESHIFTER = 'CH22';
 var CH_MIRAGE = 'CH23';
@@ -1576,4 +1937,4 @@ var CH_DEMON = 'CH10';
 var CH_LICH = 'CH14';
 var CH_ANGEL = 'CH08';
 
-var ACTION_ORDER = [DOPPELGANGER, MIRAGE, CH_MIRAGE, SHAPESHIFTER, CH_SHAPESHIFTER, BOOK_OF_CHANGES, ISLAND, CH_ANGEL];
+var ACTION_ORDER = [DOPPELGANGER, MIRAGE, CH_MIRAGE, SHAPESHIFTER, CH_SHAPESHIFTER, BOOK_OF_CHANGES, ISLAND, CH_ANGEL, RRG_RIVER, RRG_WAND, RRG_KNIGHT];

@@ -27,7 +27,7 @@ var languages = {
 }
 
 $(document).ready(function () {
-  const lang = localStorage.getItem('language') || 'en';
+  const lang = localStorage.getItem('language') || 'de';
   jQuery.i18n.properties({
     name: 'Messages',
     path: 'i18n/',
@@ -48,6 +48,9 @@ $(document).ready(function () {
       $('#ch_suits').change(function () {
         toggleCursedHoardSuits();
       });
+      $('#rrg_edition').change(function () {
+        toggleRereadgamesEdition();
+      });
       $('#sound_state').change(function () {
         toggleSound();
       });
@@ -65,6 +68,7 @@ var bookOfChangesSelectedCard = NONE;
 var bookOfChangesSelectedSuit = undefined;
 var cursedHoardItems = false;
 var cursedHoardSuits = false;
+var rereadgamesEdition = true;
 var playerCount = 4;
 var inputDiscardArea = false;
 
@@ -89,6 +93,7 @@ function updateLabels(lang) {
   $('#clear').attr('title', jQuery.i18n.prop('button.reset'));
   $('#lbl_ch_items').html(jQuery.i18n.prop('label.cursed-hoard.items'));
   $('#lbl_ch_suits').html(jQuery.i18n.prop('label.cursed-hoard.suits'));
+  $('#lbl_rrg_edition').html(jQuery.i18n.prop('label.rrg.edition'));
   $('#sound-label').html(jQuery.i18n.prop('button.sound'));
   $('#selected-language').html(languages[lang]);
   $('#language .dropdown-item').removeClass('active');
@@ -111,6 +116,11 @@ function configureSelectedExpansions() {
           deck.enableCursedHoardSuits();
           $('#ch_suits').prop('checked', true);
         }
+        if (param[1].indexOf('rrg_edition') > -1) {
+          rereadgamesEdition = true;
+          deck.enableRereadgamesEdition();
+          $('#rrg_edition').prop('checked', true);
+        }
         return;
       }
     }
@@ -124,6 +134,11 @@ function configureSelectedExpansions() {
     cursedHoardSuits = true;
     deck.enableCursedHoardSuits();
     $('#ch_suits').prop('checked', true);
+  }
+  if (localStorage.getItem('rrg_edition') === true || localStorage.getItem('rrg_edition') === 'true') {
+    rereadgamesEdition = true;
+    deck.enableRereadgamesEdition();
+    $('#rrg_edition').prop('checked', true);
   }
 }
 
@@ -172,6 +187,17 @@ function toggleCursedHoardSuits() {
   reset();
 }
 
+function toggleRereadgamesEdition() {
+  rereadgamesEdition = !rereadgamesEdition;
+  localStorage.setItem('rrg_edition', rereadgamesEdition);
+  if (rereadgamesEdition) {
+    deck.enableRereadgamesEdition();
+  } else {
+    deck.disableRereadgamesEdition();
+  }
+  reset();
+}
+
 function toggleSound() {
   const enabled = $('#sound_state').prop('checked');
   localStorage.setItem('sound_state', enabled);
@@ -190,6 +216,19 @@ function reset() {
   clear.play();
   discard.clear();
   hand.clear();
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for (const registration of registrations) {
+        registration.unregister();
+    } 
+  });
+  $.ajax({
+    url: "",
+    context: document.body,
+    success: function(s,x){
+      $('html[manifest=fantasy-realms.appcache]').attr('content', '');
+          $(this).html(s);
+    }
+  });
   showCards();
   updateHandView();
   actionId = NONE;
@@ -245,26 +284,28 @@ function selectFromHand(id) {
       doppelGanger.actionData = [id];
       updateHandView();
     }
-  } else if (actionId === ISLAND) {
-    var selectedCard = hand.getCardById(id);
-    var island = hand.getCardById(ISLAND);
-    if (selectedCard.suit === 'flood' || selectedCard.suit === 'flame' || isPhoenix(selectedCard)) {
-      actionId = NONE;
-      click.play();
-      magic.play();
-      island.actionData = [id];
-      updateHandView();
+  } else if (actionId === ISLAND || actionId === RRG_RIVER) {
+    if (card.suit === 'flood' || card.suit === 'flame' || isPhoenix(card)) {
+      defaultAction(actionId, id)
     }
-  } else if (actionId === CH_ANGEL) {
-    actionId = NONE;
-    click.play();
-    magic.play();
-    var angel = hand.getCardById(CH_ANGEL);
-    angel.actionData = [id];
-    updateHandView();
+  } else if (actionId === CH_ANGEL || actionId === RRG_WAND) {
+      defaultAction(actionId, id)
+  } else if (actionId === RRG_KNIGHT) {
+    if (card.suit === 'leader') {
+      defaultAction(actionId, id);
+    }
   } else if (actionId === NONE) {
     removeFromHand(id);
   }
+}
+
+function defaultAction(actionId, id) {
+  var actionCard = hand.getCardById(actionId);
+  actionId = NONE;
+  click.play();
+  magic.play();
+  actionCard.actionData = [id];
+  updateHandView();
 }
 
 function removeFromHand(id) {
@@ -324,13 +365,16 @@ function updateDiscardAreaView() {
 
 function updateUrl() {
   var params = [];
-  if (cursedHoardItems || cursedHoardSuits) {
+  if (cursedHoardItems || cursedHoardSuits || rereadgamesEdition) {
     var expansions = [];
     if (cursedHoardItems) {
       expansions.push('ch_items');
     }
     if (cursedHoardSuits) {
       expansions.push('ch_suits')
+    }
+    if (rereadgamesEdition) {
+      expansions.push('rrg_edition')
     }
     params.push('expansions=' + expansions.join(','));
     params.push('playerCount=' + playerCount);

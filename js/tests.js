@@ -62,6 +62,10 @@ $(document).ready(function () {
   assertScoreByCode('FR55P,CH21,FR15+', 35, 'Bonus of Phoenix (Promo) prevents bonus of World Tree');
   assertScoreByCode('FR55P,FR20,FR15,CH22,FR53,FR26,FR27+CH22:FR55,FR53:FR55P', 109, 'Copy of a Phoenix (Promo) only counts as a Beast');
   assertScoreByCode('FR55P,FR10,FR20,FR15,FR36,FR38,FR26,CH05+', 132, 'Phoenix (Promo) retains suits when blanked');
+
+  // RRG Edition
+  assertScoreByCode('RG02,FR06,RG01,FR07+RG01:FR07', 102, 'Check if River can block Swamp')
+  assertScoreByCode('RG02,FR37,RG01,FR06+', 133, 'Bridge adds 34 for difference between Fountain of Life and Basilisk')
 });
 
 function assertScoreByName(cardNames, expectedScore, message) {
