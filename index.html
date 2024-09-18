@@ -76,14 +76,18 @@
               {{strength}}
             {{/if}}
           </span> 
-          {{#if impersonator}}
-            {{#if magic}}
-              {{{i18n actionData.[0] '.name'}}}
+          {{#if petrified}}
+            {{petrifiedName}}
+          {{else}}
+            {{#if impersonator}}
+              {{#if magic}}
+                {{{i18n actionData.[0] '.name'}}}
+              {{else}}
+                {{{i18n id '.name'}}}
+              {{/if}}
             {{else}}
               {{{i18n id '.name'}}}
             {{/if}}
-          {{else}}
-            {{{i18n id '.name'}}}
           {{/if}}
           {{#if magic}}
           *

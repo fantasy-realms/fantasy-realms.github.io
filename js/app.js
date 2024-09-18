@@ -225,8 +225,12 @@ function reset() {
     url: "",
     context: document.body,
     success: function(s,x){
-      $('html[manifest=fantasy-realms.appcache]').attr('content', '');
-          $(this).html(s);
+      try {
+        $('html[manifest=fantasy-realms.appcache]').attr('content', '');
+        $(this).html(s);
+      } catch (e) {
+        //do nothing
+      }
     }
   });
   showCards();

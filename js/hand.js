@@ -156,6 +156,7 @@ class Hand {
     this._resetHand();
     this._performCardActions();
     this._clearPenalties();
+    this._applyPetrification();
     this._applyBlanking();
     for (const card of this.nonBlankedCards()) {
       score += card.score(this, discard);
@@ -189,6 +190,30 @@ class Hand {
             target.penaltyCleared = true;
           }
         }
+      }
+    }
+  }
+
+  _applyPetrification() {
+    var petrified = [];
+    for (const card of this.nonBlankedCards()) {
+      if (this._cardPetrified(card, [card])) {
+        petrified.push(card);
+      }
+    }
+  }
+
+  _cardPetrified(card) {
+    if (this.containsId(RRG_BASILISK) && !card.penaltyCleared && ![RRG_BASILISK, RRG_PHOENIX, PHOENIX, PHOENIX_PROMO].includes(card.id)) {
+      if (card.suit == 'army' || card.suit == 'leader' || (card.suit == 'beast' && !isBeastClearedFromPenalty(card, this))) {
+        card.petrifiedName = jQuery.i18n.prop('RGE02.name').replace('{name}', jQuery.i18n.prop(card.id + '.name'));
+        card.petrified = true;
+        card.strength = 5;
+        card.suit = 'land';
+        card.bonus = false;
+        card.bonusScore = ()=>0;
+        card.penalty = false;
+        card.penaltyScore = ()=>0;
       }
     }
   }

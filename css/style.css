@@ -316,6 +316,10 @@ span.cursed-item {
   color: var(--cursed-item-color);
 }
 
+span.single {
+  font-style: italic;
+}
+
 #cursed-item-header {
   border-right: solid var(--cursed-item-color) var(--header-border);
 }
