@@ -95,7 +95,7 @@ class Hand {
 
   containsSuit(suitName) {
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName || (Array.isArray(card.altSuits) && card.altSuits.includes(suitName))) {
+      if (card.suit === suitName || (Array.isArray(card.addSuits) && card.addSuits.includes(suitName))) {
         return true;
       }
     }
@@ -104,7 +104,7 @@ class Hand {
 
   containsSuitExcluding(suitName, excludingCardId) {
     for (const card of this.nonBlankedCards()) {
-      if ((card.suit === suitName || (Array.isArray(card.altSuits) && card.altSuits.includes(suitName))) && card.id !== excludingCardId) {
+      if ((card.suit === suitName || (Array.isArray(card.addSuits) && card.addSuits.includes(suitName))) && card.id !== excludingCardId) {
         return true;
       }
     }
@@ -114,7 +114,7 @@ class Hand {
   countSuit(suitName) {
     var count = 0;
     for (const card of this.nonBlankedCards()) {
-      if (card.suit === suitName || (Array.isArray(card.altSuits) && card.altSuits.includes(suitName))) {
+      if (card.suit === suitName || (Array.isArray(card.addSuits) && card.addSuits.includes(suitName))) {
         count++;
       }
     }
@@ -124,7 +124,17 @@ class Hand {
   countSuitExcluding(suitName, excludingCardId) {
     var count = 0;
     for (const card of this.nonBlankedCards()) {
-      if ((card.suit === suitName || (Array.isArray(card.altSuits) && card.altSuits.includes(suitName))) && card.id !== excludingCardId) {
+      if ((card.suit === suitName || (Array.isArray(card.addSuits) && card.addSuits.includes(suitName))) && card.id !== excludingCardId) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  countPetrified() {
+    var count = 0;
+    for (const card of this.nonBlankedCards()) {
+      if (card.petrified) {
         count++;
       }
     }
@@ -135,6 +145,37 @@ class Hand {
     return this.cards().filter(function (card) {
       return !card.blanked;
     });
+  }
+
+  blankedCards() {
+    return this.cards().filter(function (card) {
+      return card.blanked;
+    });
+  }
+
+  allStrengths() {
+    var strengths = 0;
+    for (const card of this.nonBlankedCards()) {
+      strengths += card.strength;
+    }
+    return strengths;
+  }
+
+  countElementalsExcluding(excludingCard) {
+    var count = 0;
+    if (hand.contains('Fire Elemental') && excludingCard != 'Fire Elemental') {
+      count++;
+    }
+    if (hand.contains('Air Elemental') && excludingCard != 'Air Elemental') {
+      count++;
+    }
+    if (hand.contains('Earth Elemental') && excludingCard != 'Earth Elemental') {
+      count++;
+    }
+    if (hand.contains('Water Elemental') && excludingCard != 'Water Elemental') {
+      count++;
+    }
+    return count;
   }
 
   faceDownCursedItems() {
@@ -206,7 +247,7 @@ class Hand {
   _cardPetrified(card) {
     if (this.containsId(RRG_BASILISK) && !card.penaltyCleared && ![RRG_BASILISK, RRG_PHOENIX, PHOENIX, PHOENIX_PROMO].includes(card.id)) {
       if (card.suit == 'army' || card.suit == 'leader' || (card.suit == 'beast' && !isBeastClearedFromPenalty(card, this))) {
-        card.petrifiedName = jQuery.i18n.prop('RGE02.name').replace('{name}', jQuery.i18n.prop(card.id + '.name'));
+        card.petrifiedName = jQuery.i18n.prop('RGS02.name').replace('{name}', jQuery.i18n.prop(card.id + '.name'));
         card.petrified = true;
         card.strength = 5;
         card.suit = 'land';
@@ -421,7 +462,7 @@ class CardInHand {
     /* this.id = card.id;
     this.name = card.name;
     this.suit = card.suit;
-    this.altSuits = card.altSuits;
+    this.addSuits = card.addSuits;
     this.strength = card.strength;
     this.bonus = card.bonus;
     this.penalty = card.penalty;

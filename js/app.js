@@ -12,6 +12,21 @@ Handlebars.registerHelper('i18n', function () {
   }
 });
 
+Handlebars.registerHelper({
+  eq: (v1, v2) => v1 === v2,
+  ne: (v1, v2) => v1 !== v2,
+  lt: (v1, v2) => v1 < v2,
+  gt: (v1, v2) => v1 > v2,
+  lte: (v1, v2) => v1 <= v2,
+  gte: (v1, v2) => v1 >= v2,
+  and() {
+      return Array.prototype.every.call(arguments, Boolean);
+  },
+  or() {
+      return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+  }
+});
+
 var languages = {
   'en': 'English',
   'de': 'Deutsch',
@@ -51,6 +66,12 @@ $(document).ready(function () {
       $('#rrg_edition').change(function () {
         toggleRereadgamesEdition();
       });
+      $('#rrg_edition_ext').change(function () {
+        toggleRereadgamesEditionExt();
+      });
+      $('#rrg_buildings').change(function () {
+        toggleRereadgamesBuildings();
+      });
       $('#sound_state').change(function () {
         toggleSound();
       });
@@ -69,6 +90,8 @@ var bookOfChangesSelectedSuit = undefined;
 var cursedHoardItems = false;
 var cursedHoardSuits = false;
 var rereadgamesEdition = true;
+var rereadgamesEditionExt = false;
+var rereadgamesBuildings = false;
 var playerCount = 4;
 var inputDiscardArea = false;
 
@@ -94,6 +117,8 @@ function updateLabels(lang) {
   $('#lbl_ch_items').html(jQuery.i18n.prop('label.cursed-hoard.items'));
   $('#lbl_ch_suits').html(jQuery.i18n.prop('label.cursed-hoard.suits'));
   $('#lbl_rrg_edition').html(jQuery.i18n.prop('label.rrg.edition'));
+  $('#lbl_rrg_edition_ext').html(jQuery.i18n.prop('label.rrg.edition.ext'));
+  $('#lbl_rrg_buildings').html(jQuery.i18n.prop('label.rrg.buildings'));
   $('#sound-label').html(jQuery.i18n.prop('button.sound'));
   $('#selected-language').html(languages[lang]);
   $('#language .dropdown-item').removeClass('active');
@@ -121,6 +146,16 @@ function configureSelectedExpansions() {
           deck.enableRereadgamesEdition();
           $('#rrg_edition').prop('checked', true);
         }
+        if (param[1].indexOf('rrg_edition_ext') > -1) {
+          rereadgamesEditionExt = true;
+          deck.enableRereadgamesEditionExt();
+          $('#rrg_edition_ext').prop('checked', true);
+        }
+        if (param[1].indexOf('rrg_buildings') > -1) {
+          rereadgamesBuildings = true;
+          deck.enableRereadgamesBuildings();
+          $('#rrg_buildings').prop('checked', true);
+        }
         return;
       }
     }
@@ -139,6 +174,16 @@ function configureSelectedExpansions() {
     rereadgamesEdition = true;
     deck.enableRereadgamesEdition();
     $('#rrg_edition').prop('checked', true);
+  }
+  if (localStorage.getItem('rrg_edition_ext') === true || localStorage.getItem('rrg_edition_ext') === 'true') {
+    rereadgamesEditionExt = true;
+    deck.enableRereadgamesEditionExt();
+    $('#rrg_edition_ext').prop('checked', true);
+  }
+  if (localStorage.getItem('rrg_buildings') === true || localStorage.getItem('rrg_buildings') === 'true') {
+    rereadgamesBuildings = true;
+    deck.enableRereadgamesBuildings();
+    $('#rrg_buildings').prop('checked', true);
   }
 }
 
@@ -194,6 +239,28 @@ function toggleRereadgamesEdition() {
     deck.enableRereadgamesEdition();
   } else {
     deck.disableRereadgamesEdition();
+  }
+  reset();
+}
+
+function toggleRereadgamesEditionExt() {
+  rereadgamesEditionExt = !rereadgamesEditionExt;
+  localStorage.setItem('rrg_edition_ext', rereadgamesEditionExt);
+  if (rereadgamesEditionExt) {
+    deck.enableRereadgamesEditionExt();
+  } else {
+    deck.disableRereadgamesEditionExt();
+  }
+  reset();
+}
+
+function toggleRereadgamesBuildings() {
+  rereadgamesBuildings = !rereadgamesBuildings;
+  localStorage.setItem('rrg_buildings', rereadgamesBuildings);
+  if (rereadgamesBuildings) {
+    deck.enableRereadgamesBuildings();
+  } else {
+    deck.disableRereadgamesBuildings();
   }
   reset();
 }
@@ -369,7 +436,7 @@ function updateDiscardAreaView() {
 
 function updateUrl() {
   var params = [];
-  if (cursedHoardItems || cursedHoardSuits || rereadgamesEdition) {
+  if (cursedHoardItems || cursedHoardSuits || rereadgamesEdition || rereadgamesEditionExt || rereadgamesBuildings) {
     var expansions = [];
     if (cursedHoardItems) {
       expansions.push('ch_items');
@@ -379,6 +446,12 @@ function updateUrl() {
     }
     if (rereadgamesEdition) {
       expansions.push('rrg_edition')
+    }
+    if (rereadgamesEditionExt) {
+      expansions.push('rrg_edition_ext')
+    }
+    if (rereadgamesBuildings) {
+      expansions.push('rrg_buildings')
     }
     params.push('expansions=' + expansions.join(','));
     params.push('playerCount=' + playerCount);

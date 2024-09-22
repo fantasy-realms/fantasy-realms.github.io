@@ -68,7 +68,7 @@
     {{#each playerCards}}
     <div id="card-{{id}}" class="card" onclick="selectFromHand('{{id}}')">
       <ul class="list-group">
-        <li class="list-group-item {{suit}}{{altSuits.[0]}}{{altSuits.[1]}} {{#if blanked}}blanked{{/if}}">
+        <li class="list-group-item {{suit}}{{addSuits.[0]}}{{addSuits.[1]}} {{#if blanked}}blanked{{/if}}">
           <span class="badge badge-secondary">
             {{#if blanked}}
               {{i18n 'label.blanked'}}
@@ -103,7 +103,11 @@
         <li class="list-group-item bonus {{#if blanked}}blanked{{/if}}">
           {{{i18n id '.bonus'}}}
           {{#if bonusPoints}}
-          <span class="float-right bonus">+{{bonusPoints}}</span>
+            {{#if (gte bonusPoints 0)}}
+              <span class="float-right bonus">+{{bonusPoints}}</span>
+            {{else}}
+              <span class="float-right penalty">{{bonusPoints}}</span>
+            {{/if}}
           {{/if}}
         </li>
         {{/if}}
@@ -163,7 +167,7 @@
   </script>
   <div id="container">
     <header>
-      <a href="https://wizkids.com/fantasy-realms/"><img src="img/fantasy-realms.jpg" style="height: 3rem; max-width: 100%;"></img></a>
+      <a href="#"><img src="img/fantasy-realms.jpg" style="height: 3rem; max-width: 100%;"></img></a>
       <div id="header-right">
         <div id="hand-info">
           <span id="cardCount">0</span><span class="separator">/</span><span id="cardLimit">7</span>
@@ -178,19 +182,27 @@
       </div>
       <div id="right">
         <div id="settings" style="display: none;">
-          <img src="img/cursed-hoard.png" style="height: 3.5rem;"></img>
+          <!--<img src="img/cursed-hoard.png" style="height: 3.5rem;"></img>-->
           <div style="display: inline-block;">
-            <div class="custom-control custom-switch">
+            <!--<div class="custom-control custom-switch">
               <input type="checkbox" class="custom-control-input" id="ch_items">
               <label id="lbl_ch_items" class="custom-control-label" for="ch_items">Cursed Items</label>
-            </div>
-            <div class="custom-control custom-switch">
+            </div>-->
+            <!--<div class="custom-control custom-switch">
               <input type="checkbox" class="custom-control-input" id="ch_suits">
               <label id="lbl_ch_suits" class="custom-control-label" for="ch_suits">Buildings/Outsiders/Undead</label>
-            </div>
+            </div>-->
             <div class="custom-control custom-switch">
               <input type="checkbox" class="custom-control-input" id="rrg_edition">
               <label id="lbl_rrg_edition" class="custom-control-label" for="rrg_edition">ReReadGames Edition</label>
+            </div>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="rrg_edition_ext">
+              <label id="lbl_rrg_edition_ext" class="custom-control-label" for="rrg_edition_ext">ReReadGames Edition Extended</label>
+            </div>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="rrg_buildings">
+              <label id="lbl_rrg_buildings" class="custom-control-label" for="rrg_buildings">with buildings</label>
             </div>
           </div>
           <div id="language" class="dropdown">
@@ -225,14 +237,14 @@
         </div>
       </div>
     </main>
-    <footer>
+    <!--<footer>
       <div id="wizkids-logo">
         <a href="https://wizkids.com/"><img src="img/wizkids.png" style="width: 7rem;"></img></a>
       </div>
       <div id="legal-text">
         ©2021 WizKids/NECA LLC. WizKids and related marks and logos are trademarks of WizKids. All rights reserved.
       </div>
-    </footer>
+    </footer>-->
   </div>
 </body>
 
