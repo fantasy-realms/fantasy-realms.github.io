@@ -317,7 +317,7 @@ function addToView(id) {
       updateDiscardAreaView();
     }
   } else {
-    if ([SHAPESHIFTER, CH_SHAPESHIFTER, MIRAGE, CH_MIRAGE].includes(actionId)) {
+    if ([SHAPESHIFTER, CH_SHAPESHIFTER, RRG_SHAPESHIFTER, MIRAGE, CH_MIRAGE, RRG_MIRAGE, RRG_MIRROR].includes(actionId)) {
       click.play();
       magic.play();
       var duplicator = hand.getCardById(actionId);
@@ -346,16 +346,16 @@ function selectFromHand(id) {
       bookOfChangesSelectedCard = id;
       performBookOfChanges();
     }
-  } else if (actionId === DOPPELGANGER) {
-    if (id !== DOPPELGANGER) {
-      actionId = NONE;
+  } else if (actionId === DOPPELGANGER || actionId === RRG_DOPPELGANGER) {
+    if (id !== DOPPELGANGER && id !== RRG_DOPPELGANGER) {
       click.play();
       magic.play();
-      var doppelGanger = hand.getCardById(DOPPELGANGER);
-      doppelGanger.actionData = [id];
+      var actionCard = hand.getCardById(actionId);
+      actionCard.actionData = [id];
+      actionId = NONE;
       updateHandView();
     }
-  } else if (actionId === ISLAND || actionId === RRG_RIVER) {
+  } else if (actionId === ISLAND || actionId === RRG_RIVER || actionId === RRG_ISLAND) {
     if (card.suit === 'flood' || card.suit === 'flame' || isPhoenix(card)) {
       defaultAction(actionId, id)
     }
@@ -365,6 +365,14 @@ function selectFromHand(id) {
     if (card.suit === 'leader') {
       defaultAction(actionId, id);
     }
+  } else if (actionId === RRG_TREBUCHET) {
+    var actionCard = hand.getCardById(actionId);
+    click.play();
+    magic.play();
+    if (!actionCard.actionData || !Array.isArray(actionCard.actionData)) {
+      actionCard.actionData = [];
+    }
+    actionCard.actionData.push(id);
   } else if (actionId === NONE) {
     removeFromHand(id);
   }
@@ -490,6 +498,10 @@ function getDiscardFromQueryString() {
   }
 }
 
+function finishCardMultiAction(id) {
+  updateHandView();
+}
+
 function useCardAction(id) {
   click.play();
   actionId = id;
@@ -505,13 +517,21 @@ function useCardAction(id) {
       allowProtoMethodsByDefault: true
     });
     $('#cards').html(html);
-  } else if ([SHAPESHIFTER, CH_SHAPESHIFTER, MIRAGE, CH_MIRAGE].includes(id)) {
+  } else if ([SHAPESHIFTER, CH_SHAPESHIFTER, RRG_SHAPESHIFTER, MIRAGE, CH_MIRAGE, RRG_MIRAGE, RRG_MIRROR].includes(id)) {
     var duplicator = hand.getCardById(id);
+    if (id == RRG_SHAPESHIFTER) {
+      var oxen = rrgExtraItems[RRG_OXEN];
+      deck.cards[oxen.id] = oxen;
+    }
     showCards(duplicator.card.relatedSuits);
   }
   updateHandView();
   $('#card-action-text-' + id).text(jQuery.i18n.prop(id + '.action'));
   $('#card-action-use-' + id).hide();
+  var card = hand.getCardById(id);
+  if (card.multiAction) {
+    $('#card-action-done-' + id).show();
+  }
   $('#card-action-cancel-' + id).show();
 }
 
@@ -521,6 +541,7 @@ function cancelCardAction(id) {
   actionId = NONE;
   bookOfChangesSelectedCard = NONE;
   bookOfChangesSelectedSuit = undefined;
+  $('#card-action-done-' + id).hide();
   $('#card-action-cancel-' + id).hide();
   $('#card-action-use-' + id).show();
   showCards();
@@ -562,8 +583,17 @@ function switchToHand() {
   $("#hand").show();
 }
 
-function showCards(suits) {
+function showCards(suits, extraCards) {
   var template = Handlebars.compile($("#cards-template").html());
+
+  /* if (extraCards) {
+    for (var suit of Object.keys(extraCards)) {
+      for (var card of extraCards[suit]) {
+        cards[suit].push(card);
+      }
+    }
+  } */
+
   var html = template({
     suits: deck.getCardsBySuit(suits),
   }, {

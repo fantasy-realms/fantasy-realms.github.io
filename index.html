@@ -101,7 +101,11 @@
         {{/if}}
         {{#if bonus}}
         <li class="list-group-item bonus {{#if blanked}}blanked{{/if}}">
-          {{{i18n id '.bonus'}}}
+          {{#if mirrored}}
+            {{{i18n actionData.[0] '.bonus'}}}
+          {{else}}
+            {{{i18n id '.bonus'}}}
+          {{/if}}
           {{#if bonusPoints}}
             {{#if (gte bonusPoints 0)}}
               <span class="float-right bonus">+{{bonusPoints}}</span>
@@ -114,7 +118,11 @@
         {{#if penalty}}
         <li class="list-group-item penalty {{#if blanked}}blanked{{/if}} {{#if penaltyCleared}}cleared{{/if}}">
           {{#if card.penalty}}
-            {{{i18n id '.penalty'}}}
+            {{#if mirrored}}
+              {{{i18n actionData.[0] '.penalty'}}}
+            {{else}}
+              {{{i18n id '.penalty'}}}
+            {{/if}}
           {{else}}
             <!-- Doppelgänger penalty -->
             {{{i18n actionData.[0] '.penalty'}}}
@@ -128,6 +136,7 @@
         <li class="list-group-item bonus">
             <span id="card-action-text-{{id}}"></span>
             <button id="card-action-use-{{id}}" type="button" class="btn btn-sm btn-primary float-right" onclick="event.stopPropagation(); useCardAction('{{id}}');">{{{i18n 'button.use'}}}</button>
+            <button id="card-action-done-{{id}}" style="display: none;" type="button" class="btn btn-sm btn-primary float-right" onclick="event.stopPropagation(); finishCardMultiAction('{{id}}');">{{i18n 'button.done'}}</button>
             <button id="card-action-cancel-{{id}}" style="display: none;" type="button" class="btn btn-sm btn-primary float-right" onclick="event.stopPropagation(); cancelCardAction('{{id}}');">{{i18n 'button.cancel'}}</button>
         </li>
         {{/if}}
@@ -184,14 +193,14 @@
         <div id="settings" style="display: none;">
           <!--<img src="img/cursed-hoard.png" style="height: 3.5rem;"></img>-->
           <div style="display: inline-block;">
-            <!--<div class="custom-control custom-switch">
+            <!-- <div class="custom-control custom-switch">
               <input type="checkbox" class="custom-control-input" id="ch_items">
               <label id="lbl_ch_items" class="custom-control-label" for="ch_items">Cursed Items</label>
-            </div>-->
-            <!--<div class="custom-control custom-switch">
+            </div>
+            <div class="custom-control custom-switch">
               <input type="checkbox" class="custom-control-input" id="ch_suits">
               <label id="lbl_ch_suits" class="custom-control-label" for="ch_suits">Buildings/Outsiders/Undead</label>
-            </div>-->
+            </div> -->
             <div class="custom-control custom-switch">
               <input type="checkbox" class="custom-control-input" id="rrg_edition">
               <label id="lbl_rrg_edition" class="custom-control-label" for="rrg_edition">ReReadGames Edition</label>

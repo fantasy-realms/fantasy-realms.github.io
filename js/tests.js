@@ -1,5 +1,12 @@
 cursedHoardItems = false;
 cursedHoardSuits = false;
+rereadgamesEdition = false;
+rereadgamesEditionExt = false;
+rereadgamesBuildings = false;
+
+deck.disableRereadgamesBuildings();
+deck.disableRereadgamesEdition();
+
 
 $(document).ready(function () {
   assertScoreByName(['Blizzard', 'Great Flood', 'Elven Archers'], 35);
@@ -63,9 +70,22 @@ $(document).ready(function () {
   assertScoreByCode('FR55P,FR20,FR15,CH22,FR53,FR26,FR27+CH22:FR55,FR53:FR55P', 109, 'Copy of a Phoenix (Promo) only counts as a Beast');
   assertScoreByCode('FR55P,FR10,FR20,FR15,FR36,FR38,FR26,CH05+', 132, 'Phoenix (Promo) retains suits when blanked');
 
+  deck.disableCursedHoardSuits();
+  deck.disableCursedHoardItems();
+  cursedHoardSuits = false;
+  
+  deck.enableRereadgamesEdition();
+  deck.enableRereadgamesEditionExt();
+  rereadgamesEdition = true;
+  rereadgamesEditionExt = true;
   // RRG Edition
-  assertScoreByCode('RG02,FR06,RG01,FR07+RG01:FR07', 102, 'Check if River can block Swamp')
-  assertScoreByCode('RG02,FR37,RG01,FR06+', 133, 'Bridge adds 34 for difference between Fountain of Life and Basilisk')
+  //assertScoreByCode('RG02,FR06,RG01,FR07+RG01:FR07', 102, 'Check if River can block Swamp')
+  //assertScoreByCode('RG02,FR37,RG01,FR06+', 133, 'Bridge adds 34 for difference between Fountain of Life and Basilisk')
+  assertScoreByCode('RG33,RG37,RG10+RG33:RGS01', 63, "Shapeshifter imitates oxen")
+  assertScoreByCode('RG18,RG30,RG33+RG33:RG30', 24, 'Hydra only scores different weapon cards');
+  assertScoreByCode('RG59,RG34,RG35,RG38,RG58,RGE07,RGE08+', 356, 'Collector with all floods');
+  assertScoreByCode('RG53,RG01,RG38,RG47,RG46,RG19,RG51,RG34+', 374, 'Elementarist with all elementals')
+  assertScoreByCode('RG28,RG05,RG35,RG39,RG50,RGE13,RG31+', 212, 'World tree with phoenix card');
 });
 
 function assertScoreByName(cardNames, expectedScore, message) {

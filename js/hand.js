@@ -60,6 +60,12 @@ class Hand {
 
   deleteCardById(id) {
     var normalizedId = this._normalizeId(id);
+    
+    var card = this.cardsInHand[normalizedId]
+    if (card.delFunc && typeof card.delFunc == "function") {
+      card.delFunc(this);
+    }
+
     delete this.cardsInHand[normalizedId];
     delete this.cursedItems[normalizedId];
   }
@@ -115,6 +121,18 @@ class Hand {
     var count = 0;
     for (const card of this.nonBlankedCards()) {
       if (card.suit === suitName || (Array.isArray(card.addSuits) && card.addSuits.includes(suitName))) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  countSuitDistinctCardNames(suitName) {
+    var count = 0;
+    var names = [];
+    for (const card of this.nonBlankedCards()) {
+      if ((card.suit === suitName || (Array.isArray(card.addSuits) && card.addSuits.includes(suitName))) && !names.includes(card.name)) {
+        names.push(card.name)
         count++;
       }
     }
@@ -526,12 +544,18 @@ class CardInHand {
           target.suit = suit;
           target.magic = true;
         }
-      } else if ([SHAPESHIFTER, CH_SHAPESHIFTER, MIRAGE, CH_MIRAGE].includes(this.id)) {
-        var selectedCard = deck.getCardById(this.actionData[0]);
+      } else if ([SHAPESHIFTER, CH_SHAPESHIFTER, RRG_SHAPESHIFTER, MIRAGE, CH_MIRAGE, RRG_MIRAGE, RRG_MIRAGE_G].includes(this.id)) {
+        var selectedCard = this.actionData[0] == RRG_OXEN ? rrgExtraItems[RRG_OXEN] : deck.getCardById(this.actionData[0]);
         this.name = selectedCard.name;
         this.suit = selectedCard.suit;
         this.magic = true;
-      } else if (this.id === DOPPELGANGER) {
+        if (this.id == RRG_SHAPESHIFTER) {
+          delete deck.cards[RRG_OXEN];
+          if (typeof showCards === 'function') {
+            showCards()
+          }
+        }
+      } else if (this.id === DOPPELGANGER || this.id === RRG_DOPPELGANGER) {
         var selectedCard = hand.getCardById(this.actionData[0]);
         if (selectedCard === undefined) {
           this.actionData = undefined;
@@ -542,10 +566,28 @@ class CardInHand {
           this.penalty = selectedCard.penalty;
           this.penaltyScore = selectedCard.penaltyScore;
           this.blanks = selectedCard.blanks;
-          this.blankedIf = selectedCard.blankedIf
+          this.blankedIf = selectedCard.blankedIf;
           this.magic = true;
         }
-      } else if (this.id === ISLAND || this.id == RRG_RIVER) {
+      } else if (this.id === RRG_MIRROR) {
+        var selectedCard = deck.getCardById(this.actionData[0]);
+        if (selectedCard === undefined) {
+          this.actionData = undefined;
+        } else {
+          this.name = selectedCard.name;
+          this.suit = selectedCard.suit;
+          this.strength = selectedCard.strength;
+          this.penalty = selectedCard.penalty;
+          this.penaltyScore = selectedCard.penaltyScore;
+          this.blanks = selectedCard.blanks;
+          this.blankedIf = selectedCard.blankedIf;
+          this.magic = true;
+          this.bonus = selectedCard.bonus;
+          this.bonusScore = selectedCard.bonusScore;
+          this.impersonator = true;
+          this.mirrored = true;
+        }
+      } else if (this.id === ISLAND || this.id == RRG_RIVER || this.id == RRG_ISLAND) {
         var selectedCard = hand.getCardById(this.actionData[0]);
         if (selectedCard === undefined || !(selectedCard.suit === 'flood' || selectedCard.suit === 'flame' || isPhoenix(selectedCard))) {
           this.actionData = undefined;
@@ -588,6 +630,26 @@ class CardInHand {
           selectedCard.penaltyScore = ()=>0;
           selectedCard.penaltyCleared = true;
           selectedCard.magic = true;
+        }
+      } else if (this.id === RRG_TREBUCHET) {
+        for (var i = 0; i < this.actionData.length; i++) {
+          var selectedCard = hand.getCardById(this.actionData[i]);
+          if (selectedCard === undefined || selectedCard.unselectable || selectedCard.id == this.id) {
+            this.actionData = undefined;
+          } else {
+            var projectile = rrgExtraItems[RRG_PROJECTILE];
+            selectedCard.name = projectile.name;
+            selectedCard.suit = projectile.suit;
+            selectedCard.impersonator = projectile.impersonator;
+            selectedCard.strength = projectile.strength
+            selectedCard.penalty = projectile.penalty;
+            selectedCard.bonus = projectile.bonus;
+            selectedCard.bonusScore = projectile.bonusScore;
+            selectedCard.penaltyScore = projectile.penaltyScore
+            selectedCard.action = projectile.action;
+            selectedCard.actionData = [projectile.id];
+            selectedCard.magic = true;
+          }
         }
       }
     }

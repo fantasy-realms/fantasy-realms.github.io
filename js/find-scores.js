@@ -132,14 +132,18 @@ async function findMaxAndMinScore() {
 
 function generateActionVariations(hand) {
   var actionVariations = {};
-  if (hand.containsId(DOPPELGANGER)) {
-    actionVariations[DOPPELGANGER] = [];
+  if (hand.containsId(DOPPELGANGER) || hand.containsId(RRG_DOPPELGANGER)) {
+    var dgCard = hand.containsId(DOPPELGANGER) ? DOPPELGANGER : RRG_DOPPELGANGER;
+    actionVariations[dgCard] = [];
     for (const card of hand.cards()) {
-      if (card.id !== DOPPELGANGER) {
-        actionVariations[DOPPELGANGER].push([DOPPELGANGER, card.id]);
+      if (card.id !== dgCard) {
+        actionVariations[dgCard].push([dgCard, card.id]);
       }
     }
-    actionVariations[DOPPELGANGER].push([]);
+    actionVariations[dgCard].push([]);
+  }
+  if (hand.containsId(RRG_MIRROR)) {
+    generateDuplicatorVariations(MIRAGE, hand, actionVariations);
   }
   if (hand.containsId(MIRAGE)) {
     generateDuplicatorVariations(MIRAGE, hand, actionVariations);
@@ -175,16 +179,17 @@ function generateActionVariations(hand) {
       actionVariations[BOOK_OF_CHANGES] = bookOfChangesActions;
     }
   }
-  if (hand.containsId(ISLAND)) {
+  if (hand.containsId(ISLAND) || hand.containsId(RRG_ISLAND)) {
+    var actionCard = hand.containsId(ISLAND) ? ISLAND : RRG_ISLAND;
     var islandActions = [];
     for (const card of hand.cards()) {
-      if (((card.suit === 'Flood' || card.suit === 'Flame' || isPhoenix(card) || hand.containsId(BOOK_OF_CHANGES)) && card.penalty) || card.id === DOPPELGANGER) {
-        islandActions.push([ISLAND, card.id]);
+      if (((card.suit === 'Flood' || card.suit === 'Flame' || isPhoenix(card) || hand.containsId(BOOK_OF_CHANGES)) && card.penalty) || card.id === DOPPELGANGER || card.id === RRG_DOPPELGANGER) {
+        islandActions.push([actionCard, card.id]);
       }
     }
     if (islandActions.length > 0) {
       islandActions.push([]);
-      actionVariations[ISLAND] = islandActions;
+      actionVariations[actionCard] = islandActions;
     }
   }
   if (Object.keys(actionVariations).length === 0) {
