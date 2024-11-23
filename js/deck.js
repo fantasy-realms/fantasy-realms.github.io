@@ -158,7 +158,7 @@ var base = {
       return 10 * hand.countSuit('flood');
     },
     blanks: function (card, hand) {
-      return card.suit === 'flame' && card.name !== 'Lightning';
+      return (card.suit === 'flame' && card.name !== 'Lightning') || card.id === PHOENIX_PROMO;
     },
     relatedSuits: ['flood', 'flame'],
     relatedCards: ['Lightning']
@@ -1022,7 +1022,14 @@ var cursedHoard = {
     bonus: false,
     penalty: true,
     blanks: function (card, hand) {
-      return card.suit !== 'outsider' && hand.countSuit(card.suit) === 1 && card.id !== PHOENIX;
+      if (card.suit === 'outsider' || card.id === PHOENIX) {
+        return false;
+      }
+      if (card.id === PHOENIX_PROMO) {
+        return hand.countSuit(card.suit) === 1 || hand.countSuit('flame') === 1 || hand.countSuit('weather') === 1;
+      } else {
+        return hand.countSuit(card.suit) === 1;
+      }
     },
     relatedSuits: ['outsider'],
     relatedCards: []
@@ -1496,7 +1503,7 @@ var deck = {
     }
   },
   getCardById: function (id) {
-    if (typeof(id) == "number") {
+    if (typeof (id) == "number") {
       id = id.toString()
     }
 
