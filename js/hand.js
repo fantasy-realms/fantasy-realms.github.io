@@ -362,7 +362,7 @@ class Hand {
         actions.push(card.id + ':' + card.actionData.join(':'));
       }
     }
-    return Object.keys({ ...this.cardsInHand, ...this.cursedItems }).join() + '+' + actions.join();
+    return Object.keys({ ...this.cursedItems, ...this.cardsInHand }).join() + '+' + actions.join();
   }
 
   loadFromString(string) {
