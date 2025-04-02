@@ -1727,18 +1727,22 @@ var rrgItems = {
         if (card.id == this.id) {
           continue;
         }
-        var cardName = jQuery.i18n.prop(card.id + '.name');
+        var cardNames = [jQuery.i18n.prop(card.id + '.name')];
+        if (card.magic) {
+          cardNames = [...cardNames, ...card.actionData.map(cid=>jQuery.i18n.prop(cid + '.name'))];
+        }
         for (const card2 of hand.nonBlankedCards()) {
           if (card2.id === card.id || card2.id === this.id) {
             continue;
           }
+          
           if (card2.bonus) {
             var card2Bonus = jQuery.i18n.prop(card2.id + '.bonus');
-            quoteCount += countInstances(card2Bonus, cardName);
+            quoteCount += countInstances(card2Bonus, cardNames);
           }
           if (card2.penalty) {
             var card2Penalty = jQuery.i18n.prop(card2.id + '.penalty');
-            quoteCount += countInstances(card2Penalty, cardName);
+            quoteCount += countInstances(card2Penalty, cardNames);
           }
         }
       }
@@ -1832,7 +1836,7 @@ var rrgItems = {
     },
     penalty: true,
     penaltyScore: function (hand) {
-      return -40;
+      return hand.containsSuit('wizard') ? 0 : -40;
     },
     blanks: function (card, hand) {
       if (!hand.containsSuit('wizard')) {
@@ -2390,7 +2394,7 @@ var rrgItems = {
     },
     penalty: false,
     clearsPenalty: function(card) {
-      card.suit == 'beast'
+      return card.suit == 'beast'
     },
     relatedSuits: ['beast'],
     relatedCards: [],
@@ -2587,14 +2591,14 @@ var rrgItems = {
     strength: 3,
     bonus: true,
     bonusScore: function(hand) {
-      return (hand.contains('Elves') || hand.contains('Field mistress') || hand.contains('Tamer')) ? 30 : 0;
+      return (hand.contains('Elves') || hand.contains('Field mistress') || hand.contains('Beastmaster')) ? 30 : 0;
     },
     penalty: true,
     penaltyScore: function(hand) {
       return hand.containsSuit('weather') ? -15 : 0;
     },
     relatedSuits: ['weather'],
-    relatedCards: ['Elves', 'Field mistress', 'Tamer']
+    relatedCards: ['Elves', 'Field mistress', 'Beastmaster']
   },
   'RG63': {
     id: 'RG63',
@@ -2706,10 +2710,10 @@ var rrgExtItems = {
     },
     penalty: true,
     blankedIf: function(hand) {
-      return hand.containsId("Tamer")
+      return hand.containsId("Beastmaster")
     },
     relatedSuits: ['beast'],
-    relatedCards: ['Tamer', 'Basilisk', 'Dragon', 'Unicorn', 'Hydra', 'Phoenix']
+    relatedCards: ['Beastmaster', 'Basilisk', 'Dragon', 'Unicorn', 'Hydra', 'Phoenix']
   },
   'RGE05': {
     id: 'RGE05',
@@ -3099,12 +3103,19 @@ var deck = {
   }
 };
 
-function countInstances(string, word) {
-  var count = string.split(word).length - 1;
-  if (count > 0) {
-    console.log("Found literal reference: " + word + " in string: " + string);
+function countInstances(string, words) {
+  if (!Array.isArray(words)) {
+    words = [words];
   }
-  return count
+  var allCount = 0;
+  for (var word of words) {
+    var count = string.split(word).length - 1;
+    if (count > 0) {
+      allCount += count;
+      console.log("Found literal reference: " + word + " in string: " + string);
+    }
+  }
+  return allCount;
 }
 
 function isArmyClearedFromPenalty(card, hand) {

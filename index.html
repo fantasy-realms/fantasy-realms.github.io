@@ -32,7 +32,7 @@
   <script src="js/jquery.i18n.properties.min.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/handlebars.min-v4.7.7.js"></script>
-  <script src="js/deck.js?v=0.1"></script>
+  <script src="js/deck.js?v=0.5 "></script>
   <script src="js/discard.js"></script>
   <script src="js/hand.js?v=0.1"></script>
   <script src="js/app.js?v=0.1"></script>
@@ -133,12 +133,15 @@
         </li>
         {{/if}}
         {{#if card.action}}
+	  {{#if blanked}}
+	  {{else}}
         <li class="list-group-item bonus">
             <span id="card-action-text-{{id}}"></span>
             <button id="card-action-use-{{id}}" type="button" class="btn btn-sm btn-primary float-right" onclick="event.stopPropagation(); useCardAction('{{id}}');">{{{i18n 'button.use'}}}</button>
             <button id="card-action-done-{{id}}" style="display: none;" type="button" class="btn btn-sm btn-primary float-right" onclick="event.stopPropagation(); finishCardMultiAction('{{id}}');">{{i18n 'button.done'}}</button>
             <button id="card-action-cancel-{{id}}" style="display: none;" type="button" class="btn btn-sm btn-primary float-right" onclick="event.stopPropagation(); cancelCardAction('{{id}}');">{{i18n 'button.cancel'}}</button>
         </li>
+	  {{/if}}
         {{/if}}
         {{#if card.referencesPlayerCount}}
         <li class="list-group-item bonus">
