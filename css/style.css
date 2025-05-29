@@ -390,6 +390,14 @@ span.single {
   border: 0;
 }
 
+/* #hand li.bonus {
+  background-color: #e9fce9 !important;
+}
+
+#hand li.penalty {
+  background-color: #ffebeb !important;
+} */
+
 #hand li.timing {
   padding-bottom: 0;
   margin-bottom: 0;
