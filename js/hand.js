@@ -20,11 +20,11 @@ class Hand {
   _canAdd(newCard) {
     if (newCard.cursedItem) {
       return this.cursedItems[newCard.id] === undefined;
-    } else if (this.cardsInHand[newCard.id] !== undefined || this.size() > this._defaultLimit()) {
+    } else if (this.cardsInHand[newCard.id] !== undefined || this.size() >= this.limit()) {
       return false;
     } else if (this.size() < this._limitWithoutNecromancer()) {
       return true;
-    } else if (![NECROMANCER, CH_NECROMANCER].includes(newCard.id) && newCard.extraCard) {
+    } else if (![NECROMANCER, CH_NECROMANCER, RRG_NECROMANCER].includes(newCard.id) && newCard.extraCard) {
       return true;
     } else if (this.containsId(NECROMANCER, true) || newCard.id === NECROMANCER) {
       var targetFound = false;
@@ -42,6 +42,14 @@ class Hand {
         }
       }
       return targetFound || this.containsId(CH_NECROMANCER, true) && deck.getCardById(CH_NECROMANCER).relatedSuits.includes(newCard.suit);
+    } else if (this.containsId(RRG_NECROMANCER, true) || newCard.id === RRG_NECROMANCER) {
+      var targetFound = false;
+      for (const card of this.cards()) {
+        if (card.card.id !== RRG_NECROMANCER && deck.getCardById(RRG_NECROMANCER).relatedSuits.includes(card.card.suit)) {
+          targetFound = true;
+        }
+      }
+      return targetFound || this.containsId(RRG_NECROMANCER, true) && deck.getCardById(RRG_NECROMANCER).relatedSuits.includes(newCard.suit);
     } else {
       return false;
     }
@@ -196,6 +204,46 @@ class Hand {
     return count;
   }
 
+  countStrengthLessThanExcept(strength, exceptCard) {
+    var count = 0;
+    for (const card of this.nonBlankedCards()) {
+      if (card.id != exceptCard.id && card.strength <= strength) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  containsNoStrongerThan(strength) {
+    for (const card of this.nonBlankedCards()) {
+      if (card.strength > strength) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  countModExcept(key, mod, exceptCards) {
+    var result = 0;
+    if (!exceptCards.length) {
+      exceptCards = [exceptCards];
+    }
+    for (const card of this.nonBlankedCards()) {
+      if (card[key] % mod == 0) {
+        var skip = false;
+        for (const exceptCard of exceptCards) {
+          if (card.id === exceptCard.id) {
+            skip = true;
+          }
+        }
+        if (!skip) {
+          result++;
+        }
+      }
+    }
+    return result
+  }
+
   faceDownCursedItems() {
     return Object.values(this.cursedItems);
   }
@@ -256,25 +304,36 @@ class Hand {
   _applyPetrification() {
     var petrified = [];
     for (const card of this.nonBlankedCards()) {
-      if (this._cardPetrified(card, [card])) {
+      if (this._cardPetrified(card)) {
         petrified.push(card);
       }
     }
   }
 
   _cardPetrified(card) {
-    if (this.containsId(RRG_BASILISK) && !card.penaltyCleared && ![RRG_BASILISK, RRG_PHOENIX, PHOENIX, PHOENIX_PROMO].includes(card.id)) {
-      if (card.suit == 'army' || card.suit == 'leader' || (card.suit == 'beast' && !isBeastClearedFromPenalty(card, this))) {
-        card.petrifiedName = jQuery.i18n.prop('RGS02.name').replace('{name}', jQuery.i18n.prop(card.id + '.name'));
-        card.petrified = true;
-        card.strength = 5;
-        card.suit = 'land';
-        card.bonus = false;
-        card.bonusScore = ()=>0;
-        card.penalty = false;
-        card.penaltyScore = ()=>0;
+    if (this.containsId(RRG_BASILISK) && !card.penaltyCleared && ![RRG_BASILISK, RRG_PHOENIX, PHOENIX, PHOENIX_PROMO].includes(card.id) && !this._cannotBeBlanked(card)) {
+      if ((card.suit == 'army' && !isArmyClearedFromPenalty(card, this)) || 
+          (card.suit == 'leader' && !isLeaderClearedFromPenalty(card, this)) || 
+          (card.suit == 'beast' && !isBeastClearedFromPenalty(card, this)) || 
+          (card.suit == 'monster' && !isMonsterClearedFromPenalty(card, this))) {
+        this._petrifyCard(card)
       }
     }
+    // RGE22: Troll by Sun
+    if (this.containsId(RRG_SUN) && card.id === RRG_TROLL && !card.penaltyCleared) {
+      this._petrifyCard(card);
+    }
+  }
+
+  _petrifyCard(card) {
+    card.petrifiedName = jQuery.i18n.prop('RGS02.name').replace('{name}', jQuery.i18n.prop(card.id + '.name'));
+      card.petrified = true;
+      card.strength = 5;
+      card.suit = 'land';
+      card.bonus = false;
+      card.bonusScore = ()=>0;
+      card.penalty = false;
+      card.penaltyScore = ()=>0;
   }
 
   _applyBlanking() {
@@ -376,6 +435,7 @@ class Hand {
   _cannotBeBlanked(card) {
     return (card.suit === 'undead' && (this.containsId(CH_LICH, true) || this.containsId(CH_NECROMANCER, true)))
       || card.id === CH_ANGEL
+      || card.id === RRG_WARDEN
       || (card.magic && this.containsId(CH_ANGEL, true) && this.getCardById(CH_ANGEL).actionData && this.getCardById(CH_ANGEL).actionData[0] === card.id);
   }
 
@@ -396,7 +456,7 @@ class Hand {
     var limit = this._defaultLimit();
     for (const card of this.cards()) {
       if (card.extraCard) {
-        return limit + 1;
+        limit++;
       }
     }
     for (const cursedItem of this.faceDownCursedItems()) {
@@ -414,7 +474,7 @@ class Hand {
   _limitWithoutNecromancer() {
     var limit = this._defaultLimit();
     for (const card of this.cards()) {
-      if (card.extraCard && ![NECROMANCER, CH_NECROMANCER].includes(card.id)) {
+      if (card.extraCard && ![NECROMANCER, CH_NECROMANCER, RRG_NECROMANCER].includes(card.id)) {
         return limit + 1;
       }
     }
@@ -587,7 +647,7 @@ class CardInHand {
           this.impersonator = true;
           this.mirrored = true;
         }
-      } else if (this.id === ISLAND || this.id == RRG_RIVER || this.id == RRG_ISLAND) {
+      } else if (this.id === ISLAND || this.id == RRG_ISLAND) {
         var selectedCard = hand.getCardById(this.actionData[0]);
         if (selectedCard === undefined || !(selectedCard.suit === 'flood' || selectedCard.suit === 'flame' || isPhoenix(selectedCard))) {
           this.actionData = undefined;
@@ -622,7 +682,7 @@ class CardInHand {
           selectedCard.actionData = [oxen.id];
           selectedCard.magic = true;
         }
-      } else if (this.id === RRG_KNIGHT) {
+      } else if (this.id === RRG_GUARD) {
         var selectedCard = hand.getCardById(this.actionData[0]);
         if (selectedCard === undefined || selectedCard.unselectable || selectedCard.id == this.id) {
           this.actionData = undefined;
@@ -651,6 +711,17 @@ class CardInHand {
             selectedCard.magic = true;
           }
         }
+      } else if (this.id === RRG_LIGHTNING) {
+        var selectedCard = hand.getCardById(this.actionData[0]);
+        if (selectedCard === undefined || selectedCard.unselectable || selectedCard.id == this.id) {
+          this.actionData = undefined;
+        } else {
+          this.blanks = function (card, hand) {
+            return card.name === selectedCard.name;
+          }
+        }
+      } else if (this.id === RRG_GUARD_DOGS) {
+        this.suit = hand.containsId(RRG_WARDEN) ? 'army' : 'beast';
       }
     }
   }

@@ -65,13 +65,15 @@ $(document).ready(function () {
       });
       $('#rrg_edition').change(function () {
         toggleRereadgamesEdition();
+        toggleRereadgamesEditionExt();
+        toggleRereadgamesBuildings();
       });
-      $('#rrg_edition_ext').change(function () {
+      /* $('#rrg_edition_ext').change(function () {
         toggleRereadgamesEditionExt();
       });
       $('#rrg_buildings').change(function () {
         toggleRereadgamesBuildings();
-      });
+      }); */
       $('#sound_state').change(function () {
         toggleSound();
       });
@@ -90,8 +92,8 @@ var bookOfChangesSelectedSuit = undefined;
 var cursedHoardItems = false;
 var cursedHoardSuits = false;
 var rereadgamesEdition = true;
-var rereadgamesEditionExt = false;
-var rereadgamesBuildings = false;
+var rereadgamesEditionExt = true;
+var rereadgamesBuildings = true;
 var playerCount = 4;
 var inputDiscardArea = false;
 
@@ -355,16 +357,17 @@ function selectFromHand(id) {
       actionId = NONE;
       updateHandView();
     }
-  } else if (actionId === ISLAND || actionId === RRG_RIVER || actionId === RRG_ISLAND) {
+  } else if (actionId === ISLAND || actionId === RRG_ISLAND) {
     if (card.suit === 'flood' || card.suit === 'flame' || isPhoenix(card)) {
       defaultAction(actionId, id)
     }
-  } else if (actionId === CH_ANGEL || actionId === RRG_WAND) {
+  } else if (actionId === CH_ANGEL || actionId === RRG_WAND || actionId === RRG_LIGHTNING) {
       defaultAction(actionId, id)
-  } else if (actionId === RRG_KNIGHT) {
-    if (card.suit === 'leader') {
+  } else if (actionId === RRG_GUARD) {
+    // (OLD from RRG_KNIGHT) 
+    // if (card.suit === 'leader') {
       defaultAction(actionId, id);
-    }
+    //}
   } else if (actionId === RRG_TREBUCHET) {
     var actionCard = hand.getCardById(actionId);
     click.play();
@@ -560,6 +563,9 @@ function performBookOfChanges() {
 }
 
 function selectSuit(suit) {
+  if (deck.rrgEditionEnabled && suit === 'wizard') {
+    return
+  }
   click.play();
   bookOfChangesSelectedSuit = suit;
   performBookOfChanges();

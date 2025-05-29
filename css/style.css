@@ -7,6 +7,7 @@
   --wizard-color: #e056a3;
   --leader-color: #7b48a4;
   --beast-color: #60a35c;
+  --monster-color: #c9ad3a;
   --weapon-color: #878586;
   --artifact-color: #d24e37;
   --wild-color: #c6c2c3;
@@ -234,6 +235,18 @@ span.beast {
 
 #beast-header {
   border-right: solid var(--beast-color) var(--header-border);
+}
+
+li.monster {
+  background-color: var(--monster-color);
+}
+
+span.monster {
+  color: var(--monster-color);
+}
+
+#monster-header {
+  border-right: solid var(--monster-color) var(--header-border);
 }
 
 li.weapon {

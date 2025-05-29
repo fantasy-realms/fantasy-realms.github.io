@@ -1524,7 +1524,7 @@ var rrgItems = {
     bonusScore: function (hand) {
       var oddCards = hand.nonBlankedCards().map(card => card.strength).filter(function (a) { return (a % 2) - 1 == 0; });
       if (oddCards.length >= 7) {
-        return 57;
+        return 91;
       }
       return (oddCards.length - 1) * 3; //without itself
     },
@@ -1545,7 +1545,7 @@ var rrgItems = {
       return !hand.containsSuit('army');
     },
     bonusScore: function (hand) {
-      return hand.containsSuit('flame') ? hand.countCardName('Projectile')*8 : 0;
+      return hand.containsSuit('flame') ? hand.countCardName('Projectile') * 8 : 0;
     },
     relatedSuits: ['army', 'flame'],
     relatedCards: []
@@ -1586,11 +1586,11 @@ var rrgItems = {
     suit: 'flame',
     name: 'Forge',
     replaces: 'FR18',
-    strength: 12,
+    strength: 9,
     bonus: true,
     penalty: false,
     bonusScore: function (hand) {
-      return 8 * (hand.countSuit('weapon') + hand.countSuit('artifact')) * (hand.contains('Dwarfes') ? 2 : 1);
+      return 15 * (hand.countSuit('weapon') + hand.countSuit('artifact')) * (hand.contains('Dwarfes') ? 2 : 1);
     },
     relatedSuits: ['weapon', 'artifact'],
     relatedCards: ['Dwarfes']
@@ -1600,13 +1600,13 @@ var rrgItems = {
     suit: 'army',
     name: 'Dwarfes',
     replaces: 'FR24',
-    strength: 15,
+    strength: 21,
     bonus: false,
     penalty: true,
     penaltyScore: function(hand) {
-      return -3 * hand.countSuitExcluding('army', this.id);
+      return -3 * hand.countSuit('wizard');
     },
-    relatedSuits: ['army'],
+    relatedSuits: ['wizard'],
     relatedCards: []
   },
   'RG09': {
@@ -1630,10 +1630,11 @@ var rrgItems = {
     strength: 11,
     bonus: true,
     penalty: false,
-    clearsPenalty: function (card) {
+    /* clearsPenalty: function (card) {
       return card.suit == 'leader'
-    },
-    relatedSuits: ['leader'],
+    }, */
+    action: true,
+    relatedSuits: [],
     relatedCards: []
   },
   'RG11': {
@@ -1641,10 +1642,10 @@ var rrgItems = {
     suit: 'army',
     name: 'Scout',
     replaces: ['FR25', 'CH19'],
-    strength: 6,
+    strength: 12,
     bonus: true,
     bonusScore: function(hand) {
-      return 10 * hand.countSuit('land');
+      return 13 * hand.countSuit('land');
     },
     penalty: false,
     relatedSuits: ['land', 'flame', 'flood', 'weather'],
@@ -1655,14 +1656,15 @@ var rrgItems = {
     suit: 'army',
     name: 'Knight',
     replaces: ['FR21', 'FR23'],
-    strength: 24,
+    strength: 20,
     bonus: true,
-    bonusScore: ()=>0,
+    bonusScore: function(hand) {
+      return hand.contains('Warhorse') ? 20 : 0;
+    },
     penalty: true,
     penaltyScore: function(hand) {
       return hand.countSuit('leader') < 1 ? -10 : 0;
     },
-    action: true,
     relatedSuits: ['land', 'flame', 'flood', 'weather'],
     relatedCards: []
   },
@@ -1677,13 +1679,13 @@ var rrgItems = {
     bonusScore: function (hand) {
       var total = 0;
       for (const card of hand.nonBlankedCards()) {
-        if (card.suit === 'army') {
+        if (card.suit === 'army' || card.suit === 'weapon') {
           total += card.strength;
         }
       }
       return total;
     },
-    relatedSuits: ['army'],
+    relatedSuits: ['army', 'weapon'],
     relatedCards: []
   },
   'RG14': {
@@ -1695,9 +1697,9 @@ var rrgItems = {
     bonus: true,
     penalty: false,
     bonusScore: function (hand) {
-      return (hand.contains('Queen') ? 30 : 6) * (hand.countSuit('artifact')+hand.countSuit('land'));
+      return (hand.contains('Queen') ? 40 : 8) * (hand.countSuit('artifact')+hand.countSuit('building'));
     },
-    relatedSuits: ['army'],
+    relatedSuits: ['artifact','building'],
     relatedCards: ['Queen']
   },
   'RG15': {
@@ -1709,9 +1711,9 @@ var rrgItems = {
     bonus: true,
     penalty: false,
     bonusScore: function (hand) {
-      return (hand.contains('King') ? 30 : 6) * (hand.countSuit('army')+hand.countSuit('weapon'));
+      return (hand.contains('King') ? 40 : 8) * (hand.countSuit('army')+hand.countSuit('weapon'));
     },
-    relatedSuits: ['army'],
+    relatedSuits: ['army','weapon'],
     relatedCards: ['King']
   },
   'RG16': {
@@ -1746,7 +1748,7 @@ var rrgItems = {
           }
         }
       }
-      return quoteCount * 12;
+      return quoteCount * 15;
     },
     relatedSuits: ['army'],
     relatedCards: ['Queen']
@@ -1759,7 +1761,7 @@ var rrgItems = {
     strength: 15,
     bonus: true,
     bonusScore: function (hand) {
-      return 10 * hand.countSuit('army');
+      return 13 * (hand.countSuit('army')+hand.countSuit('monster'));
     },
     penalty: true,
     penaltyScore: function(hand) {
@@ -1770,7 +1772,7 @@ var rrgItems = {
   },
   'RG18': {
     id: 'RG18',
-    suit: 'beast',
+    suit: 'monster',
     name: 'Hydra',
     replaces: 'FR40',
     strength: 9,
@@ -1788,7 +1790,7 @@ var rrgItems = {
   },
   'RG19': {
     id: 'RG19',
-    suit: 'beast',
+    suit: 'monster',
     name: 'Basilisk',
     replaces: 'FR37',
     strength: 35,
@@ -1799,16 +1801,17 @@ var rrgItems = {
   },
   'RG20': {
     id: 'RG20',
-    suit: 'beast',
+    suit: 'monster',
     name: 'Unicorn',
     replaces: 'FR36',
-    strength: 9,
+    strength: 1,
     bonus: true,
     bonusScore: function (hand) {
-      return hand.contains('Princess') ? 30 : (hand.contains('Empress') || hand.contains('Queen') || hand.contains('Enchantress')) ? 15 : 0;
+      return (hand.contains('Princess') && hand.contains('Fountain of Life')) ||
+      (hand.contains('Axe') && hand.contains('Warlock Lady') && hand.contains('Wand')) ? 150 : 0;
     },
     relatedSuits: [],
-    relatedCards: ['Princess', 'Empress', 'Queen', 'Enchantress']
+    relatedCards: ['Princess', 'Fountain of Life', 'Axe', 'Wand', 'Warlock Lady']
   },
   'RG21': {
     id: 'RG21',
@@ -1826,22 +1829,22 @@ var rrgItems = {
   },
   'RG22': {
     id: 'RG22',
-    suit: 'beast',
+    suit: 'monster',
     name: 'Dragon',
     replaces: 'FR39',
-    strength: 30,
+    strength: 35,
     bonus: true,
     bonusScore: function(hand) {
-      return 5 * (hand.countSuit('artifact')+hand.countSuit('weapon'));
+      return hand.containsSuit('flame') ? 10 : 0;
     },
     penalty: true,
     penaltyScore: function (hand) {
-      return hand.containsSuit('wizard') ? 0 : -40;
+      return hand.containsSuit('wizard') ? 0 : -50;
     },
     blanks: function (card, hand) {
       if (!hand.containsSuit('wizard')) {
-        return (card.suit == 'army' && isArmyClearedFromPenalty(card, hand) ||
-        card.suit == 'leader' && isLeaderClearedFromPenalty(card, hand));
+        return (card.suit == 'army' && !isArmyClearedFromPenalty(this, hand) ||
+        card.suit == 'leader' && !isLeaderClearedFromPenalty(this, hand));
       } else {
         return false;
       }
@@ -1919,14 +1922,12 @@ var rrgItems = {
           for (var i = 0; i < run.length; i++) {
             strengths.splice(strengths.indexOf(run[i]), 1);
           }
-          if (run.length === 4) {
-            bonus += 20;
-          } else if (run.length === 5) {
-            bonus += 60;
+          if (run.length === 5) {
+            bonus += 50;
           } else if (run.length === 6) {
             bonus += 100;
           } else if (run.length >= 7) {
-            bonus += 140;
+            bonus += 150;
           }
         }
       } while (runFound);
@@ -1972,11 +1973,12 @@ var rrgItems = {
     strength: 11,
     bonus: true,
     penalty: false,
+    action: true,
     bonusScore: function (hand) {
-      return (hand.contains('Rainstorm') || hand.contains('Warlock Lady')) ? 30 : 0;
+      return hand.contains('Rainstorm') ? 30 : 0;
     },
     relatedSuits: [],
-    relatedCards: ['Rainstorm', 'Warlock Lady']
+    relatedCards: ['Rainstorm']
   },
   'RG28': {
     id: 'RG28',
@@ -1998,7 +2000,10 @@ var rrgItems = {
           suits.push(card.suit);
         }
       }
-      return suits.length == 6 ? 20 : (suits.length >= 7 ? 70 : 0);
+      return suits.length == 6 ? 25 : (suits.length >= 7 ? 75 : 0);
+    },
+    blankedIf: function(hand) {
+      return hand.contains('Axe')
     },
     relatedSuits: allSuits(),
     relatedCards: []
@@ -2008,7 +2013,7 @@ var rrgItems = {
     suit: 'artifact',
     name: 'Kings Shield',
     replaces: 'FR46',
-    strength: 4,
+    strength: 6,
     bonus: true,
     penalty: false,
     bonusScore: function (hand) {
@@ -2026,7 +2031,7 @@ var rrgItems = {
     bonus: true,
     penalty: false,
     bonusScore: function (hand) {
-      return hand.containsSuit('leader') ? (hand.contains('Kings Shield') ? 40 : 10) : 0;
+      return hand.containsSuit('leader') ? (hand.contains('Kings Shield') ? 40 : 15) : 0;
     },
     relatedSuits: ['leader'],
     relatedCards: ['Kings Shield']
@@ -2178,7 +2183,7 @@ var rrgItems = {
     bonus: true,
     penalty: false,
     bonusScore: function (hand) {
-      return hand.contains('Smoke') && hand.contains('Wildfire') ? 34 : 0;
+      return hand.contains('Smoke') && hand.contains('Wildfire') ? 40 : 0;
     },
     clearsPenalty: function (card) {
       return card.suit === 'flood';
@@ -2196,7 +2201,7 @@ var rrgItems = {
     penalty: false,
     bonusScore: function (hand) {
       var total = 0;
-      total += 30 * hand.blankedCards().length;
+      total += 40 * hand.blankedCards().length;
       if (hand.contains('Necromancer')) {
         total += 20;
       }
@@ -2230,8 +2235,8 @@ var rrgItems = {
     penalty: false,
     bonusScore: function (hand) {
       var bonus = 0;
-      bonus += 10 * hand.countSuit('leader');
-      bonus += 40 * hand.countPetrified();
+      bonus += 15 * hand.countSuit('leader');
+      bonus += 35 * hand.countPetrified();
       return bonus;
     },
     relatedSuits: ['leader'],
@@ -2241,7 +2246,7 @@ var rrgItems = {
     id: 'RG43',
     suit: 'building',
     name: 'Castle',
-    strength: 22,
+    strength: 24,
     bonus: true,
     bonusScore: function (hand) {
       var bonus = 0;
@@ -2300,6 +2305,9 @@ var rrgItems = {
     strength: 10,
     bonus: true,
     penalty: false,
+    clearsPenalty: function(card) {
+      return card.name === 'Earthquake';
+    },
     bonusScore: function (hand) {
       var multiplier = hand.countSuitExcluding('land', this.id);
       multiplier += hand.countElementalsExcluding(this.name);
@@ -2328,12 +2336,12 @@ var rrgItems = {
     id: 'RG48',
     suit: 'land',
     name: 'Earthquake',
-    strength: 28,
-    bonus: false,
+    strength: 31,
+    bonus: true,
     penalty: true,
     blanks: function(card, hand) {
-      return ['artifact', 'building', 'weapon'].includes(card.suit) || 
-        (card.suit == 'land' && card.name != 'Earth Elemental' && card.id != this.id)
+      return (['artifact', 'weapon', 'land'].includes(card.suit) && card.id != this.id && card.name != 'Earth Elemental') ||
+        card.suit === 'building' && !isBuildingClearedFromPenalty(this, hand);
     },
     removeIf: function(ctx) {
       return !ctx.buildingsEnabled
@@ -2346,11 +2354,15 @@ var rrgItems = {
     suit: 'land',
     name: 'Forest',
     replaces: 'FR04',
-    strength: 7,
+    strength: 23,
     bonus: true,
     penalty: false,
     bonusScore: function (hand) {
-      return 15 * hand.countSuit('beast');
+      return 5 * (
+        (hand.containsSuit('flood') ? 1 : 0) + 
+        (hand.containsSuit('monster') ? 1 : 0) + 
+        (hand.containsSuit('beast') ? 1 : 0)
+      );
     },
     relatedSuits: ['beast'],
     relatedCards: []
@@ -2361,7 +2373,10 @@ var rrgItems = {
     name: 'Warlock Lady',
     replaces: 'FR29',
     strength: 25,
-    bonus: false,
+    bonus: true,
+    bonusScore: function (hand) {
+      return hand.contains('Lightning') ? 25 : 0;
+    },
     penalty: true,
     penaltyScore: function (hand) {
       var leaderCount = !isLeaderClearedFromPenalty(this, hand) ? 0 : hand.countSuit('leader');
@@ -2390,13 +2405,13 @@ var rrgItems = {
     strength: 9,
     bonus: true,
     bonusScore: function(hand) {
-      return 12 * hand.countSuit('beast');
+      return 15 * (hand.countSuit('beast') + hand.countSuit('monster'));
     },
     penalty: false,
     clearsPenalty: function(card) {
-      return card.suit == 'beast'
+      return card.suit == 'monster'
     },
-    relatedSuits: ['beast'],
+    relatedSuits: ['beast', 'monster'],
     relatedCards: [],
   },
   'RG53': {
@@ -2415,7 +2430,7 @@ var rrgItems = {
       if (landCount > 0 && weatherCount > 0 && floodCount > 0 && flameCount > 0) {
         return 60;
       }
-      return 5 * (landCount + weatherCount + floodCount + flameCount);
+      return 8 * (landCount + weatherCount + floodCount + flameCount);
     },
     relatedSuits: ['land', 'weather', 'flood', 'flame'],
     relatedCards: []
@@ -2535,7 +2550,7 @@ var rrgItems = {
       for (const suit of Object.values(bySuit)) {
         var count = Object.keys(suit).length;
         if (count === 3) {
-          bonus += 15;
+          bonus += 20;
         } else if (count === 4) {
           bonus += 50;
         } else if (count === 5) {
@@ -2558,10 +2573,10 @@ var rrgItems = {
     bonus: true,
     penalty: false,
     bonusScore: function (hand) {
-      return hand.contains('Dwarfes') || hand.contains('Dragon') ? 25 : 0;
+      return hand.contains('Dwarfes') || hand.contains('Dragon') || hand.contains('Bats') || hand.containsSuit('flame') ? 20 : 0;
     },
     clearsPenalty: function (card) {
-      return card.suit === 'weather' || isPhoenix(card);
+      return card.suit === 'weather';
     },
     relatedSuits: ['weather'],
     relatedCards: ['Dwarfes', 'Dragon']
@@ -2571,11 +2586,11 @@ var rrgItems = {
     suit: 'weather',
     name: 'Rainstorm',
     replaces: 'FR11',
-    strength: 8,
+    strength: 6,
     bonus: true,
     penalty: true,
     bonusScore: function (hand) {
-      return 10 * hand.countSuit('flood');
+      return 13 * hand.countSuit('flood');
     },
     blanks: function (card, hand) {
       return card.suit === 'flame' && card.name !== 'Lightning';
@@ -2609,7 +2624,7 @@ var rrgItems = {
     bonus: true,
     penalty: false,
     bonusScore: function (hand) {
-      return 8 * (hand.countSuit('army') + hand.countSuit('wizard') + hand.countSuitExcluding('leader', this.id));
+      return 8 * (hand.countSuit('beast') + hand.countSuit('wizard') + hand.countSuitExcluding('leader', this.id));
     },
     relatedSuits: ['army', 'wizard', 'leader'],
     relatedCards: []
@@ -2627,6 +2642,88 @@ var rrgItems = {
     relatedSuits: [],
     relatedCards: []
   },
+  'RG65': {
+    id: 'RG65',
+    suit: 'monster',
+    name: 'Griffin',
+    strength: 16,
+    bonus: true,
+    bonusScore: function(hand) {
+      return (hand.contains('Fields') || hand.contains('Mountain')) ? 20 : 0;
+    },
+    penalty: false,
+    relatedSuits: [],
+    relatedCards: ['Fields', 'Mountain']
+  },
+  'RG66': {
+    id: 'RG66',
+    suit: 'monster',
+    name: 'Giant',
+    strength: 22,
+    bonus: true,
+    bonusScore: function(hand) {
+      return hand.containsNoStrongerThan(this.strength) ? 22 : 0;
+    },
+    penalty: true,
+    blanks: function(card, hand) {
+      return card.name == 'Knight';
+    },
+    relatedSuits: [],
+    relatedCards: ['Fields', 'Mountain']
+  },
+  'RG67': {
+    id: 'RG67',
+    suit: 'beast',
+    name: 'Falcon',
+    strength: 6,
+    bonus: true,
+    bonusScore: function(hand) {
+      return hand.containsSuit('leader') || hand.contains('Tower') ? 25 : 0;
+    },
+    penalty: false,
+    relatedSuits: ['leader'],
+    relatedCards: ['Tower']
+  },
+  'RG68': {
+    id: 'RG68',
+    suit: 'beast',
+    name: 'Frog',
+    strength: 2,
+    bonus: true,
+    bonusScore: function(hand) {
+      return hand.containsSuit('flood') || hand.contains('Rainstorm') || hand.containsSuit('wizard') ? 25 : 0;
+    },
+    penalty: false,
+    relatedSuits: ['flood', 'wizard'],
+    relatedCards: ['Rainstorm']
+  },
+  'RG69': {
+    id: 'RG69',
+    suit: 'beast',
+    name: 'Bats',
+    strength: 5,
+    bonus: true,
+    bonusScore: function(hand) {
+      return 10 * hand.countStrengthLessThanExcept(10, this);
+    },
+    penalty: false,
+    relatedSuits: [],
+    relatedCards: []
+  },
+  'RG70': {
+    id: 'RG70',
+    suit: 'beast',
+    name: 'Guard dogs',
+    strength: 8,
+    bonus: true,
+    bonusScore: function(hand) {
+      return 20 * hand.containsSuit('building');
+    },
+    penalty: false,
+    relatedSuits: ['building'],
+    relatedCards: ['Warden'],
+    actionData: ['suitChangeDummy']
+  }
 }
 
 var rrgExtItems = {
@@ -2666,13 +2763,13 @@ var rrgExtItems = {
       if (hand.containsSuit('wizard')) {
         bonuses.push(15);
       }
-      if (hand.contains('Telescope')) {
-        bonuses.push(30 * hand.countSuit('weather'));
+      if (hand.contains('Scholar')) {
+        bonuses.push(40 * hand.countSuit('weather'));
       }
       return bonuses.length > 0 ? Math.max(...bonuses) : 0;
     },
     relatedSuits: ['weather', 'wizard'],
-    relatedCards: ['Guard', 'Telescope']
+    relatedCards: ['Guard', 'Scholar']
   },
   'RGE03': {
     id: 'RGE03',
@@ -2687,7 +2784,7 @@ var rrgExtItems = {
         bonus += 15;
       }
       if (hand.contains('Forest')) {
-        bonus += 25;
+        bonus += 20;
       }
       return bonus;
     },
@@ -2702,25 +2799,34 @@ var rrgExtItems = {
     strength: 10,
     bonus: true,
     bonusScore: function(hand) {
-      var beastsInList = 0;
-      for (const beast of ['Basilisk', 'Dragon', 'Unicorn', 'Hydra', 'Phoenix']) {
-        beastsInList += (hand.contains(beast) ? 1 : 0)
-      }
-      return beastsInList == 1 ? 25 : 0;
+      return hand.countSuit('monster') == 1 ? 25 : 0;
     },
     penalty: true,
     blankedIf: function(hand) {
       return hand.containsId("Beastmaster")
     },
-    relatedSuits: ['beast'],
-    relatedCards: ['Beastmaster', 'Basilisk', 'Dragon', 'Unicorn', 'Hydra', 'Phoenix']
+    relatedSuits: ['monster'],
+    relatedCards: ['Tamer']
   },
   'RGE05': {
     id: 'RGE05',
     suit: 'artifact',
-    name: 'Telescope',
+    name: 'Talisman',
     strength: 6,
     bonus: true,
+    bonusScore: function (hand) {
+      var cards = hand.nonBlankedCards();
+      var cardsToScore = 0;
+      for (const card of cards) {
+        if (card.id === this.id) {
+          continue
+        }
+        if (card.strength + (card.bonusScore && card.bonusScore(hand) || 0) - (card.penaltyScore && card.penaltyScore(hand) || 0) <= 10) {
+          cardsToScore++;
+        }
+      }
+      return 20 * cardsToScore;
+    },
     penalty: false,
     relatedSuits: [],
     relatedCards: []
@@ -2744,14 +2850,17 @@ var rrgExtItems = {
     strength: 15,
     bonus: true,
     penalty: false,
-    action: true,
     bonusScore: function (hand) {
+      if (hand.contains('Fountain of Life') && hand.contains('Fields') ||
+        hand.contains('Rainstorm') && hand.contains('Great Flood')) {
+          return 40;
+      }
       return 0;
     },
-    relatedSuits: ['flood', 'fire'],
-    relatedCards: ['Bridge']
+    relatedSuits: ['flood'],
+    relatedCards: ['Fountain of Life', 'Fields', 'Rainstorm', 'Great Flood']
   },
-  'RGE08': {
+  /* 'RGE08': {
     id: 'RGE08',
     suit: 'flood',
     name: 'Sea',
@@ -2770,7 +2879,7 @@ var rrgExtItems = {
     penalty: false,
     relatedSuits: ['army', 'flame'],
     relatedCards: ['Ship', 'Net', 'Moon', 'Telescope']
-  },
+  }, */
   'RGE09': {
     id: 'RGE09',
     suit: 'flame',
@@ -2799,11 +2908,13 @@ var rrgExtItems = {
       return (card.suit == 'army' && !isArmyClearedFromPenalty(this, hand)) || 
         (card.suit == 'leader' && !isLeaderClearedFromPenalty(this, hand)) || 
         (card.suit == 'land' && card.name != 'Mountain') ||
-        (card.suit == 'beast' && card.name != 'Dragon' && !isBeastClearedFromPenalty(this, hand)) ||
-        (card.suit == 'flood' && card.name != 'River' && card.name != 'Great Flood' && card.name != 'Sea')
+        (card.suit == 'building' && card.name != 'Castle' && !isBuildingClearedFromPenalty(this, hand)) ||
+        (card.suit == 'beast' && !isBeastClearedFromPenalty(this, hand)) ||
+        (card.suit == 'monster' && card.name != 'Dragon' && !isMonsterClearedFromPenalty(this, hand)) ||
+        (card.suit == 'flood' && card.name != 'Great Flood')
     },
-    relatedSuits: ['army', 'leader', 'land', 'beast', 'flood'],
-    relatedCards: ['Mountain', 'Great Flood', 'Island', 'Dragon', 'River', 'Sea']
+    relatedSuits: ['army', 'leader', 'land', 'beast', 'flood', 'monster', 'building'],
+    relatedCards: ['Mountain', 'Great Flood', 'Island', 'Dragon', 'Castle']
   },
   'RGE11': {
     id: 'RGE11',
@@ -2816,8 +2927,8 @@ var rrgExtItems = {
     penalty: false,
     bonusScore: function (hand) {
       var bonus = 0;
-      bonus += 10 * hand.countSuit('leader');
-      bonus += 30 * hand.countPetrified();
+      bonus += 15 * hand.countSuit('leader');
+      bonus += 35 * hand.countPetrified();
       return bonus;
     },
     relatedSuits: ['leader'],
@@ -2836,7 +2947,7 @@ var rrgExtItems = {
     penalty: true,
     penaltyScore: function(hand) {
       if (hand.containsSuit('weather')) {
-        if (hand.contains('Moon')) {
+        if (hand.contains('Elves')) {
           return 0;
         } else {
           return -15;
@@ -2845,20 +2956,23 @@ var rrgExtItems = {
       return 0;
     },
     relatedSuits: ['weather'],
-    relatedCards: ['Elves', 'Field mistress', 'Monster hunter', 'Moon']
+    relatedCards: ['Elves', 'Field mistress', 'Monster hunter', 'Elves']
   },
   'RGE13': {
     id: 'RGE13',
     suit: 'weapon',
-    name: 'Net',
-    strength: 16,
+    name: 'Axe',
+    strength: 7,
     bonus: true,
-    penalty: false,
-    clearsPenalty: function (card) {
-      return card.suit === 'beast';
+    bonusScore: function(hand) {
+      if (hand.contains('Field mistress') || hand.contains('Giant') || hand.contains('Dwarfes')) {
+        return 20;
+      }
+      return 0;
     },
-    relatedSuits: ['beast'],
-    relatedCards: []
+    penalty: true,
+    relatedSuits: [],
+    relatedCards: ['Field mistress', 'Giant', 'Dwarfes', 'World Tree']
   },
   'RGE14': {
     id: 'RGE14',
@@ -2869,14 +2983,17 @@ var rrgExtItems = {
     bonusScore: function(hand) {
       return 90 - hand.allStrengths();
     },
-    penalty: false,
+    blankedIf: function(hand) {
+      return hand.contains('Sun');
+    },
+    penalty: true,
     relatedSuits: [],
-    relatedCards: []
+    relatedCards: ['Sun']
   },
   'RGE15': {
     id: 'RGE15',
     suit: 'land',
-    name: 'Steppe',
+    name: 'Fields',
     strength: 7,
     bonus: true,
     bonusScore: function(hand) {
@@ -2893,10 +3010,11 @@ var rrgExtItems = {
       if (count == 1) {
         return 20;
       } else if (count == 2) {
-        return 50;
+        return 70;
       } else if (count == 3) {
-        return 100;
+        return 130;
       }
+      return 0;
     },
     penalty: false,
     relatedSuits: [],
@@ -2909,17 +3027,123 @@ var rrgExtItems = {
     replaces: 'FR14',
     strength: 13,
     bonus: true,
-    penalty: false,
+    penalty: true,
     bonusScore: function (hand) {
       if (hand.contains('Rainstorm') && (hand.contains('Blizzard') || hand.contains('Great Flood'))) {
         return 40;
-      } else if (hand.contains('Steppe')) {
-        return 20;
       }
       return 0;
     },
+    blanks: function (card, hand) {
+      return card.name == 'Falcon' || card.name == 'Bats' || card.name == 'Griffin';
+    },
     relatedSuits: [],
-    relatedCards: ['Rainstorm', 'Blizzard', 'Great Flood', 'Steppe']
+    relatedCards: ['Rainstorm', 'Blizzard', 'Great Flood', 'Falcon', 'Bats', 'Griffin']
+  },
+  'RGE17': {
+    id: 'RGE17',
+    suit: 'building',
+    name: 'Treasury',
+    strength: 20,
+    bonus: true,
+    penalty: false,
+    relatedSuits: [],
+    relatedCards: [],
+    extraCard: true
+  },
+  'RGE18': {
+    id: 'RGE18',
+    suit: 'leader',
+    name: 'Builder',
+    strength: 4,
+    bonus: true,
+    bonusScore: function(hand) {
+      var buildings = deck.getCardsBySuit('building', hand.nonBlankedCards())?.building || [];
+      return 15 * (hand.countSuit('building') + hand.countModExcept('strength', 4, [...buildings,[this]]));
+    },
+    penalty: false,
+    relatedSuits: ['building'],
+    relatedCards: []
+  },
+  'RGE19': {
+    id: 'RGE19',
+    suit: 'weapon',
+    name: 'Cart',
+    strength: 4,
+    bonus: true,
+    bonusScore: function(hand) {
+      var bonus = 10 * hand.countSuit('army');
+      if (hand.contains('Oxen')) {
+        bonus += 30;
+      }
+      return bonus;
+    },
+    penaltyScore: function(hand) {
+      return -10 * hand.countSuit('land');
+    },
+    penalty: true,
+    relatedSuits: [],
+    relatedCards: []
+  },
+  'RGE20': {
+    id: 'RGE20',
+    suit: 'artifact',
+    name: 'Treasure chest',
+    strength: 20,
+    bonus: true,
+    penalty: false,
+    relatedSuits: [],
+    relatedCards: [],
+    extraCard: true
+  },
+  'RGE21': {
+    id: 'RGE21',
+    suit: 'weather',
+    name: 'Clouds',
+    strength: 6,
+    bonus: true,
+    bonusScore: function(hand) {
+      var bonus = 0;
+      for (const card of hand.nonBlankedCards()) {
+        if (card.penalty && !card.penaltyCleared) {
+          bonus += 10;
+        }
+      }
+      return bonus;
+    },
+    penalty: true,
+    penaltyScore: function(hand) {
+      return (hand.contains('Moon') || hand.contains('Sun')) ? -8 : 0;
+    },
+    relatedSuits: [],
+    relatedCards: [],
+    extraCard: true
+  },
+  'RGE22': {
+    id: 'RGE22',
+    suit: 'monster',
+    name: 'Troll',
+    strength: -30,
+    bonus: true,
+    penalty: true,
+    relatedSuits: [],
+    relatedCards: [],
+  },
+  'RGE23': {
+    id: 'RGE23',
+    suit: 'building',
+    name: 'Dam',
+    strength: 15,
+    bonus: true,
+    bonusScore: function(hand) {
+      return 10 * hand.countSuit('flood');
+    },
+    blankedIf: function(hand) {
+      return hand.countSuit('flood') >= 4;
+    },
+    penalty: true,
+    relatedSuits: [],
+    relatedCards: [],
   },
 }
 
@@ -2929,7 +3153,7 @@ var rrgExtraItems = {
     suit: 'beast',
     name: 'Oxen',
     impersonator: true,
-    strength: 10,
+    strength: 16,
     bonus: false,
     bonusScore: ()=>0,
     penalty: false,
@@ -2943,7 +3167,7 @@ var rrgExtraItems = {
     suit: 'weapon',
     name: 'Projectile',
     impersonator: true,
-    strength: 12,
+    strength: 16,
     bonus: false,
     bonusScore: ()=>0,
     penalty: false,
@@ -3070,10 +3294,13 @@ var deck = {
     }
     return this.cards[id] || this.cursedItems[id];
   },
-  getCardsBySuit: function (suits) {
+  getCardsBySuit: function (suits, cards) {
     var cardsBySuit = {};
-    for (const id in this.cards) {
-      const card = this.cards[id];
+    if (!cards) {
+      cards = this.cards;
+    }
+    for (const id in cards) {
+      const card = cards[id];
       if (suits === undefined || suits.includes(card.suit)) {
         if (cardsBySuit[card.suit] === undefined) {
           cardsBySuit[card.suit] = [];
@@ -3126,18 +3353,27 @@ function isArmyClearedFromPenalty(card, hand) {
   return hand.containsId('FR25', true) || hand.containsId('CH19', true) || 
     (card.suit === 'flood' && hand.containsId('FR41', true)) || 
     (card.suit === 'flood' && hand.containsId('RG32', true)) || 
-    (card.suit === 'beast' && hand.containsId('RGE04', true)) ||
+    (card.suit === 'monster' && hand.containsId('RGE04', true)) ||
     (['flame', 'flood', 'weather'].includes(card.suit) && hand.containsId('RG11', true));
 }
 
 function isLeaderClearedFromPenalty(card, hand) {
-  // RG10: Guard: CLEARS the word Leader from all Penalties
-  return hand.containsId('RG10', true);
+  // (OLD) RG10: Guard: CLEARS the word Leader from all Penalties
+  return false //hand.containsId('RG10', true);
 }
 
 function isBeastClearedFromPenalty(card, hand) {
   // RGE06: Pony companion: CLEAR the word Beast from all Penalties
   return hand.containsId('RGE06', true);
+}
+
+function isMonsterClearedFromPenalty(card, hand) {
+  return false;
+}
+
+function isBuildingClearedFromPenalty(card, hand) {
+  // RG70: Guard dogs: Building cannot be blocked
+  return hand.containsId('RG70', true);
 }
 
 function allSuits() {
@@ -3159,11 +3395,11 @@ var DOPPELGANGER = 'FR53';
 var PHOENIX = 'FR55';
 var PHOENIX_PROMO = 'FR55P';
 
-var RRG_RIVER = 'RGE07';
+//(OLD) var RRG_RIVER = 'RGE07';
 var RRG_PHOENIX = 'RG05';
 var RRG_WAND = 'RG06';
 var RRG_OXEN = 'RGS01';
-var RRG_KNIGHT = 'RG12';
+//(OLD, now: RRG_GUARD) var RRG_KNIGHT = 'RG12';
 var RRG_BASILISK = 'RG19';
 var RRG_BOOK_OF_CHANGES = 'RG26';
 var RRG_NECROMANCER = 'RG51';
@@ -3175,6 +3411,12 @@ var RRG_PROJECTILE = 'RGS03';
 var RRG_MIRROR = 'RG57';
 var RRG_ISLAND = 'RG58';
 var RRG_DOPPELGANGER = 'RG64';
+var RRG_GUARD = 'RG10';
+var RRG_LIGHTNING = 'RG27';
+var RRG_WARDEN = 'RG10';
+var RRG_GUARD_DOGS = 'RG70';
+var RRG_SUN = 'RGE09';
+var RRG_TROLL = 'RGE22';
 
 var CH_NECROMANCER = 'CH20';
 var CH_SHAPESHIFTER = 'CH22';
@@ -3183,4 +3425,4 @@ var CH_DEMON = 'CH10';
 var CH_LICH = 'CH14';
 var CH_ANGEL = 'CH08';
 
-var ACTION_ORDER = [DOPPELGANGER, RRG_DOPPELGANGER, RRG_MIRROR, MIRAGE, CH_MIRAGE, RRG_MIRAGE, RRG_MIRAGE_G, SHAPESHIFTER, CH_SHAPESHIFTER, RRG_SHAPESHIFTER, BOOK_OF_CHANGES, RRG_BOOK_OF_CHANGES, ISLAND, RRG_ISLAND, CH_ANGEL, RRG_RIVER, RRG_WAND, RRG_KNIGHT, RRG_TREBUCHET];
+var ACTION_ORDER = [DOPPELGANGER, RRG_DOPPELGANGER, RRG_MIRROR, MIRAGE, CH_MIRAGE, RRG_MIRAGE, RRG_MIRAGE_G, SHAPESHIFTER, CH_SHAPESHIFTER, RRG_SHAPESHIFTER, BOOK_OF_CHANGES, RRG_BOOK_OF_CHANGES, ISLAND, RRG_ISLAND, CH_ANGEL, RRG_TREBUCHET, RRG_WAND, RRG_GUARD, RRG_LIGHTNING, RRG_GUARD_DOGS];
