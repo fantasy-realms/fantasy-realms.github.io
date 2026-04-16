@@ -24,7 +24,7 @@ var languages = {
   'kr': '한국어',
   'ru': 'Русский',
   'zh': '简体中文',
-  'zhTW': '繁體中文'
+  'zh-TW': '繁體中文'
 }
 
 $(document).ready(function () {
