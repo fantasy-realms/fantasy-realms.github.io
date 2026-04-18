@@ -23,7 +23,8 @@ var languages = {
   'cz': 'Čeština',
   'kr': '한국어',
   'ru': 'Русский',
-  'zh': '中文'
+  'zh': '简体中文',
+  'zh-TW': '繁體中文'
 }
 
 $(document).ready(function () {
