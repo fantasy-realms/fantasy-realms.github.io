@@ -231,8 +231,9 @@ var base = {
     penalty: true,
     blanks: function (card, hand) {
       return !(card.suit === 'flame' || card.suit === 'wizard' || card.suit === 'weather' ||
-        card.suit === 'weapon' || card.suit === 'artifact' || card.suit === 'wild' || card.name === 'Mountain' ||
-        card.name === 'Great Flood' || card.name === 'Island' || card.name === 'Unicorn' || card.name === 'Dragon' ||
+               card.suit === 'weapon' || card.suit === 'artifact' || card.suit === 'wild' || card.suit === 'outsider' ||
+               card.name === 'Mountain' || card.name === 'Great Flood' || card.name === 'Island' ||
+               card.name === 'Unicorn' || card.name === 'Dragon' ||
         isPhoenix(card));
     },
     relatedSuits: allSuits(),

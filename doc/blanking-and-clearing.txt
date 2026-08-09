@@ -19,7 +19,7 @@ WEATHER:
 	
 FLAME:
 
-	Wildfire: BLANKS all cards except Flames, Wizards, Weather, Weapons, Artifacts, Mountain, Great Flood, Island, Unicorn and Dragon.
+	Wildfire: BLANKS all cards except Flames, Wizards, Weather, Weapons, Artifacts, Outsiders, Mountain, Great Flood, Island, Unicorn and Dragon.
 	--> blanks Basilisk
 	--> blanks Cavern, but Cavern first clears penalty on all weather
 	--> blanks Rangers, but Rangers firs clear word Army from all penalties 
